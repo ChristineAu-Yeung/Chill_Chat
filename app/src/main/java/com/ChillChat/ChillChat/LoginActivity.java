@@ -1,13 +1,15 @@
 package com.ChillChat.ChillChat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -35,22 +37,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     Runs when onStart() lifecycle is called
+     * Runs when onStart() lifecycle is called
      */
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         //FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(success == true) {
+        if (success) {
             Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
             startActivity(intent);
         }
     }
 
     /**
-     onClick listener for btnLogin.
-     Checks to see if the email and password are formatted, then calls signIn
+     * onClick listener for btnLogin.
+     * Checks to see if the email and password are formatted, then calls signIn
      */
     public void startLogin(View view) {
         //Get screen elements
@@ -59,12 +61,12 @@ public class LoginActivity extends AppCompatActivity {
         String sEmail = txtEmail.getText().toString();
         String sPassword = txtPassword.getText().toString();
         //Check to see if the email and password is not null
-        if (sEmail.equalsIgnoreCase("") || sPassword.equalsIgnoreCase("") || isValid(sEmail) == false) {
-            Toast.makeText(LoginActivity.this, "Enter a valid Username and/or password.",Toast.LENGTH_SHORT).show();
+        if (sEmail.equalsIgnoreCase("") || sPassword.equalsIgnoreCase("") || !isValid(sEmail)) {
+            Toast.makeText(LoginActivity.this, "Enter a valid Username and/or password.", Toast.LENGTH_SHORT).show();
         } else {
             //Attempt to sign in
             signIn(sEmail, sPassword);
-            if(success == true) {
+            if (success) {
                 txtEmail.setText("");
                 txtPassword.setText("");
             }
@@ -74,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     This function will attempt to sign into Firebase
+     * This function will attempt to sign into Firebase
      * email - the users email (String)
      * password - the users password (String)
      */
@@ -93,14 +95,14 @@ public class LoginActivity extends AppCompatActivity {
                             success = true;
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
     /**
-     onClick listener for btnAnonLogin
+     * onClick listener for btnAnonLogin
      */
     public void startChat(View view) {
         Intent intent = new Intent(this, ChatActivity.class);
@@ -108,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     This function will check if an email is valid
+     * This function will check if an email is valid
      * email - the users email (String)
      * returns: boolean based on found result (bool)
      */
