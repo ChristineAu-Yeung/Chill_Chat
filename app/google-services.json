@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "325019919421",
+    "firebase_url": "https://chill-chat-9adcf.firebaseio.com",
+    "project_id": "chill-chat-9adcf",
+    "storage_bucket": "chill-chat-9adcf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325019919421:android:15b19258a1bcb5fd43b654",
+        "android_client_info": {
+          "package_name": "com.ChillChat.ChillChat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325019919421-boo0l47i0u7dr7dlh7n11jvevgogvjhe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAofNH5FJqcUqL8PFNC9PX1aGjWjm3SYHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "325019919421-boo0l47i0u7dr7dlh7n11jvevgogvjhe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
