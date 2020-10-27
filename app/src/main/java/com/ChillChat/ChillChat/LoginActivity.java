@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     onClick listener for btnAnonLogin
+     onClick listener for btnRegister
      */
     public void register(View view) {
         Intent intent = new Intent(this, SignupActivity.class);
