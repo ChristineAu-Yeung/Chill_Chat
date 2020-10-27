@@ -100,17 +100,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     onClick listener for btnRegister.
-     Opens the SignupActivity to allow the user to register an account
-     */
-    public void register(View view) {
-        Intent intent = new Intent(this, SignupActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      onClick listener for btnAnonLogin
-     Opens the ChatActivity as an anonymous user
      */
     public void startChat(View view) {
         Intent intent = new Intent(this, ChatActivity.class);
