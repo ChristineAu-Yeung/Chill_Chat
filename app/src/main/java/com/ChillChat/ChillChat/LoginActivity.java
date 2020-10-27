@@ -125,6 +125,13 @@ public class LoginActivity extends AppCompatActivity {
      Opens the ChatActivity to allow user to anonymously chat
      */
     public void startChat(View view) {
+        //Open shared preference from file location and open editor
+        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor edit = prefs.edit();
+        //Edit the Email to be text from email and commit changes
+        edit.putString("Email", "Anonymous");
+        edit.commit();
+        //Start ChatActivity with temporary email.
         Intent intent = new Intent(this, ChatActivity.class);
         startActivity(intent);
     }
