@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +26,12 @@ public class SignupActivity extends AppCompatActivity {
     private static EditText txtUsername;
     private static EditText txtPassword;
     private static EditText txtConfirmPassword;
+    //Variable for SharedPreference
+    protected static final String FILE_NAME = "CurrentUser";
 
+    /**
+     Runs when onCreate() state is called.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,26 +39,32 @@ public class SignupActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(parseColor("#0080ff"));
         //Firebase Authorization
         mAuth = FirebaseAuth.getInstance();
-
+        //Get screen elements
         txtUsername = findViewById(R.id.txtEmail);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirmPassword = findViewById(R.id.txtConfirmPassword);
     }
 
     /**
-     This function will run when the activity is in the started state
+     Runs when onStart() state is called.
+     This function is used to check if the user is already signed in, preventing invalid logout
      */
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-//        if(success == true) {
-//            startActivity(new Intent(SignupActivity.this, ChatActivity.class));
-//        }
+        //Open shared preference from file location and retrieve Email
+        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+        String username = prefs.getString("Email", "Void");
+        //Compare the stored username to Void to see if a user is currently signed it
+        if(username.compareTo("Void") != 0) {
+            Intent intent = new Intent(this, ChatActivity.class);
+            startActivity(intent);
+        }
     }
 
     /**
-     Will get fired on btnSignup button click.
+     onClick listener for btnSignup.
+     Attempts to register the user with the information provided.
      */
     public void register(View view) {
         //Get text from screen elements
@@ -81,7 +93,7 @@ public class SignupActivity extends AppCompatActivity {
      * @param email - the user entered password
      * @param password - the user entered password
      */
-    protected void createAccount(String email, String password) {
+    protected void createAccount(final String email, String password) {
         // Check authentication with google firebase method
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -91,6 +103,12 @@ public class SignupActivity extends AppCompatActivity {
                             //If the authentication is successful, Login, create toast(msg), startActivity, getInstance of Singleton for global user variable
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(SignupActivity.this, "Account Created!", Toast.LENGTH_SHORT).show();
+                            //Open shared preference from file location and open editor
+                            SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                            SharedPreferences.Editor edit = prefs.edit();
+                            //Edit the Email to be text from email and commit changes
+                            edit.putString("Email", email);
+                            edit.commit();
                             startActivity(new Intent(SignupActivity.this, ChatActivity.class));
                             success = true;
                         } else {

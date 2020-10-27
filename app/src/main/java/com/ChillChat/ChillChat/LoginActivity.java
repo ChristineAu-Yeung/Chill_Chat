@@ -3,6 +3,7 @@ package com.ChillChat.ChillChat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +23,12 @@ public class LoginActivity extends AppCompatActivity {
     public static boolean success = false;
     //private CallbackManager callbackManager;
     private static final String EMAIL = "email";
-    //private static Singleton instance;
+    //Variable for SharedPreference
+    protected static final String FILE_NAME = "CurrentUser";
 
+    /**
+     Runs when onCreate() state is called.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Basic operations
@@ -35,14 +40,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     Runs when onStart() lifecycle is called
+     Runs when onStart() state is called.
+     This function is used to check if the user is already signed in, avoiding the login process.
      */
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(success == true) {
+        //Open shared preference from file location and retrieve Email
+        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+        String username = prefs.getString("Email", "Void");
+        //Compare the stored username to Void to see if a user is currently signed it
+        if(username.compareTo("Void") != 0) {
             Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
             startActivity(intent);
         }
@@ -50,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      onClick listener for btnLogin.
-     Checks to see if the email and password are formatted, then calls signIn
+     Checks to see if the email and password are formatted, then attempts signIn()
      */
     public void startLogin(View view) {
         //Get screen elements
@@ -68,8 +76,6 @@ public class LoginActivity extends AppCompatActivity {
                 txtEmail.setText("");
                 txtPassword.setText("");
             }
-            //Ryan - Add shared pref to save current user email
-            //instance = Singleton.getInstance(email);
         }
     }
 
@@ -78,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
      * email - the users email (String)
      * password - the users password (String)
      */
-    private void signIn(String email, String password) {
+    private void signIn(final String email, String password) {
         Log.d(TAG, "signIn:" + email);
 
         // [START sign_in_with_email]
@@ -87,6 +93,12 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            //Open shared preference from file location and open editor
+                            SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                            SharedPreferences.Editor edit = prefs.edit();
+                            //Edit the Email to be text from email and commit changes
+                            edit.putString("Email", email);
+                            edit.commit();
                             // Sign in success, update UI with the signed-in user's information
                             Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
                             startActivity(intent);
@@ -101,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      onClick listener for btnRegister
+     Opens the SignupActivity to allow user to register
      */
     public void register(View view) {
         Intent intent = new Intent(this, SignupActivity.class);
@@ -109,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      onClick listener for btnAnonLogin
+     Opens the ChatActivity to allow user to anonymously chat
      */
     public void startChat(View view) {
         Intent intent = new Intent(this, ChatActivity.class);
