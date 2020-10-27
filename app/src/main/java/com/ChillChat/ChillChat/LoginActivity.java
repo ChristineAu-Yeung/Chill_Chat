@@ -102,6 +102,14 @@ public class LoginActivity extends AppCompatActivity {
     /**
      onClick listener for btnAnonLogin
      */
+    public void register(View view) {
+        Intent intent = new Intent(this, SignupActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     onClick listener for btnAnonLogin
+     */
     public void startChat(View view) {
         Intent intent = new Intent(this, ChatActivity.class);
         startActivity(intent);
