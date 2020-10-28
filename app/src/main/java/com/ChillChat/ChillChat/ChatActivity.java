@@ -1,15 +1,35 @@
 package com.ChillChat.ChillChat;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import static android.graphics.Color.parseColor;
 
 public class ChatActivity extends AppCompatActivity {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+
+    ListView chatListView;
+    EditText chatEditText;
+    Button logoutButton;
+    Button sendButton;
+    ChatAdapter messageAdapter;
+
+    ArrayList<String> chatMessages;
 
     /**
      Runs when onCreate() state is called.
@@ -20,6 +40,29 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         getWindow().setStatusBarColor(parseColor("#0080ff"));
+
+        chatListView = findViewById(R.id.chatListView);
+        chatEditText = findViewById(R.id.chatEditText);
+        logoutButton = findViewById(R.id.logoutButton);
+        sendButton = findViewById(R.id.sendButton);
+
+        chatMessages = new ArrayList<>();
+
+        messageAdapter = new ChatAdapter(this);
+        chatListView.setAdapter(messageAdapter);
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = chatEditText.getText().toString();
+                if(text.length() != 0){
+                    chatMessages.add(text);
+                    messageAdapter.notifyDataSetChanged();
+                    chatEditText.setText("");
+                }
+            }
+        });
+
     }
 
     /**
@@ -53,5 +96,38 @@ public class ChatActivity extends AppCompatActivity {
         LoginActivity.success = false;
         Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    private class ChatAdapter extends ArrayAdapter<String> {
+        public ChatAdapter(Context context){
+            super(context, 0);
+        }
+
+        public int getCount(){
+            return chatMessages.size();
+        }
+
+        public String getItem(int position){
+            return chatMessages.get(position);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent){
+            LayoutInflater inflater = ChatActivity.this.getLayoutInflater();
+
+            View result = null;
+
+//            if (position % 2 == 0){
+//                result = inflater.inflate(R.layout.chat_row_incoming, null);
+//            } else {
+//                result = inflater.inflate(R.layout.chat_row_outgoing, null);
+//            }
+
+            result = result = inflater.inflate(R.layout.chat_row_outgoing, null);
+
+            TextView message = (TextView) result.findViewById(R.id.message_text);
+            message.setText(getItem(position));  // get str at position
+
+            return result;
+        }
     }
 }
