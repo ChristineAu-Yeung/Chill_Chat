@@ -75,7 +75,7 @@ public class SignupActivity extends AppCompatActivity {
         //Checks to see if all fields are filled in and if the password matches the retyped password. Then attempts to create account.
         if (email.isEmpty() || password.isEmpty() || retype.isEmpty()) {
             createAlert("Please fill in all fields before continuing.", "Attention!");
-        } else if (isValid(email) == false) {
+        } else if (!isValid(email)) {
             createAlert("Please enter a valid email address.", "Email!");
         }else if(password.length() >= 6 && password.equals(retype)) {
             //Attempt to create the account
@@ -109,6 +109,12 @@ public class SignupActivity extends AppCompatActivity {
                             //Edit the Email to be text from email and commit changes
                             edit.putString("Email", email);
                             edit.commit();
+
+                            // Create user document
+                            DatabaseService db = new DatabaseService();
+                            db.setUserData(mAuth.getUid(), email);
+
+                            // Start ChatActivity
                             startActivity(new Intent(SignupActivity.this, ChatActivity.class));
                             success = true;
                         } else {
