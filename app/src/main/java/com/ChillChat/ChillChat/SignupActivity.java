@@ -2,6 +2,7 @@ package com.ChillChat.ChillChat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +12,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
 import static android.graphics.Color.parseColor;
 
 public class SignupActivity extends AppCompatActivity {
@@ -23,14 +29,15 @@ public class SignupActivity extends AppCompatActivity {
     private static boolean success = false;
     private static final String TAG = "EmailPassword";
     //Screen elements
-    private static EditText txtUsername;
-    private static EditText txtPassword;
-    private static EditText txtConfirmPassword;
+    private EditText txtUsername;
+    private EditText txtPassword;
+    private EditText txtConfirmPassword;
+    private EditText txtFirstName;
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
 
     /**
-     Runs when onCreate() state is called.
+     * Runs when onCreate() state is called.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +50,12 @@ public class SignupActivity extends AppCompatActivity {
         txtUsername = findViewById(R.id.txtEmail);
         txtPassword = findViewById(R.id.txtPassword);
         txtConfirmPassword = findViewById(R.id.txtConfirmPassword);
+        txtFirstName = findViewById(R.id.txtFirstName);
     }
 
     /**
-     Runs when onStart() state is called.
-     This function is used to check if the user is already signed in, preventing invalid logout
+     * Runs when onStart() state is called.
+     * This function is used to check if the user is already signed in, preventing invalid logout
      */
     @Override
     public void onStart() {
@@ -56,44 +64,48 @@ public class SignupActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
         String username = prefs.getString("Email", "Void");
         //Compare the stored username to Void to see if a user is currently signed it
-        if(username.compareTo("Void") != 0) {
+        if (username.compareTo("Void") != 0) {
             Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
         }
     }
 
     /**
-     onClick listener for btnSignup.
-     Attempts to register the user with the information provided.
+     * onClick listener for btnSignup.
+     * Attempts to register the user with the information provided.
      */
     public void register(View view) {
         //Get text from screen elements
         String email = txtUsername.getText().toString();
         String password = txtPassword.getText().toString();
         String retype = txtConfirmPassword.getText().toString();
+        String firstName = txtFirstName.getText().toString();
 
         //Checks to see if all fields are filled in and if the password matches the retyped password. Then attempts to create account.
-        if (email.isEmpty() || password.isEmpty() || retype.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || retype.isEmpty() || firstName.isEmpty()) {
             createAlert("Please fill in all fields before continuing.", "Attention!");
         } else if (!isValid(email)) {
             createAlert("Please enter a valid email address.", "Email!");
-        }else if(password.length() >= 6 && password.equals(retype)) {
+        } else if (password.length() >= 6 && password.equals(retype)) {
             //Attempt to create the account
-            createAccount(email, password);
+            createAccount(email, password, firstName);
             txtUsername.setText("");
             txtPassword.setText("");
             txtConfirmPassword.setText("");
+            txtFirstName.setText("");
         } else {
             createAlert("Please enter a 6 digit password in both locations.", "Password!");
         }
     }
 
     /**
-     This function will allow you to create a popup alert on the screen
-     * @param email - the user entered password
-     * @param password - the user entered password
+     * This function will allow you to create a popup alert on the screen
+     *
+     * @param email     - the user entered password
+     * @param password  - the user entered password
+     * @param firstName - the user's first name
      */
-    protected void createAccount(final String email, String password) {
+    protected void createAccount(final String email, String password, final String firstName) {
         // Check authentication with google firebase method
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -111,8 +123,27 @@ public class SignupActivity extends AppCompatActivity {
                             edit.commit();
 
                             // Create user document
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             DatabaseService db = new DatabaseService();
-                            db.setUserData(mAuth.getUid(), email);
+                            db.setUserData(user.getUid(), email, firstName);
+
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(firstName)
+                                    .build();
+
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d(TAG, "User profile updated.");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "User profile was not updated.");
+                                        }
+                                    });
 
                             // Start ChatActivity
                             startActivity(new Intent(SignupActivity.this, ChatActivity.class));
@@ -127,8 +158,9 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     /**
-     This function will allow you to create a popup alert on the screen
-     * @param msg - Message that will be displayed
+     * This function will allow you to create a popup alert on the screen
+     *
+     * @param msg   - Message that will be displayed
      * @param title - The title that is displayed at the top of the popup
      */
     protected void createAlert(String msg, String title) {
@@ -145,7 +177,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     /**
-     This function will check if an email is valid
+     * This function will check if an email is valid
      * email - the users email (String)
      * returns: boolean based on found result (bool)
      */
