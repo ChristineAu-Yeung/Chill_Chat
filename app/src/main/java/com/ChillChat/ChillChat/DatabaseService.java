@@ -29,11 +29,14 @@ public class DatabaseService {
      * Basic information can be access with FirebaseAuth.getInstance().getUser . . .getEmail(), etc.
      * @param uid UID of the user
      * @param email Email address of the user (for testing)
+     * @param firstName First name of the user (to add to the user record)
      */
-    void setUserData(String uid, String email){
-        // Create a user object and add data to it. This can be expanded in the future
+    void setUserData(String uid, String email, String firstName){
+        // Create a user object for the document and add data to it.
+        // This can be expanded in the future
         Map<String, Object> user = new HashMap<>();
         user.put("email", email);
+        user.put("firstName", firstName);
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)

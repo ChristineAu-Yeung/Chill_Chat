@@ -64,6 +64,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
+    <EditText
+        android:id="@+id/txtFirstName"
+        android:layout_width="352dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:ems="10"
+        android:hint="First Name"
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtConfirmPassword" />
 
     <Button
         android:id="@+id/btnSignup"
@@ -73,10 +90,10 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:onClick="register"
-        android:text="Signup"
+        android:text="Sign up"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtConfirmPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/txtFirstName" />
 
     <ImageView
         android:id="@+id/imageView"
