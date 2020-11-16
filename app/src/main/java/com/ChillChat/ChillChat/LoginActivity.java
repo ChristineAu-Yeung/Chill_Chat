@@ -15,6 +15,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import static android.graphics.Color.parseColor;
+import static com.ChillChat.ChillChat.DatabaseService.updateUserData;
 
 public class LoginActivity extends AppCompatActivity {
     //Firebase
@@ -124,16 +125,34 @@ public class LoginActivity extends AppCompatActivity {
      onClick listener for btnAnonLogin
      Opens the ChatActivity to allow user to anonymously chat
      */
+
     public void startChat(View view) {
-        //Open shared preference from file location and open editor
-        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor edit = prefs.edit();
-        //Edit the Email to be text from email and commit changes
-        edit.putString("Email", "Anonymous");
-        edit.commit();
-        //Start ChatActivity with temporary email.
-        Intent intent = new Intent(this, ChatActivity.class);
-        startActivity(intent);
+        //Firebase creates Authentication for Anonymous ID
+        mAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    //Place Anonymous Data into Database
+                    updateUserData("null",  "Anonymous");
+                    SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putString("Email", "Anonymous");
+                    edit.commit();
+                    Toast.makeText(LoginActivity.this, "Anonymous Login Complete.",Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(LoginActivity.this, ChatActivity.class));
+                }
+            }
+        });
+
+        //Old Code
+//        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+//        SharedPreferences.Editor edit = prefs.edit();
+//        //Edit the Email to be text from email and commit changes
+//        edit.putString("Email", "Anonymous");
+//        edit.commit();
+//        //Start ChatActivity with temporary email.
+//        Intent intent = new Intent(this, ChatActivity.class);
+//        startActivity(intent);
     }
 
     /**
