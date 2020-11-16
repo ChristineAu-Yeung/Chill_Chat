@@ -122,28 +122,8 @@ public class SignupActivity extends AppCompatActivity {
                             edit.putString("Email", email);
                             edit.commit();
 
-                            // Create user document
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            DatabaseService db = new DatabaseService();
-                            db.setUserData(user.getUid(), email, firstName);
-
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(firstName)
-                                    .build();
-
-                            user.updateProfile(profileUpdates)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Log.d(TAG, "User profile updated.");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "User profile was not updated.");
-                                        }
-                                    });
+                            // Update the user's document as well as profile data
+                            updateUserData(email, firstName);
 
                             // Start ChatActivity
                             startActivity(new Intent(SignupActivity.this, ChatActivity.class));
@@ -184,5 +164,36 @@ public class SignupActivity extends AppCompatActivity {
     protected static boolean isValid(String email) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
+    }
+
+    /**
+     * Update the user's document as well as profile data
+     * This function should stay private to this class
+     * @param firstName User's first name
+     * @param email User's email address
+     */
+    private void updateUserData(String email, String firstName){
+        // Create user document
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseService db = new DatabaseService();
+        db.setUserData(user.getUid(), email, firstName);
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(firstName)
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "User profile updated.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "User profile was not updated.");
+                    }
+                });
     }
 }
