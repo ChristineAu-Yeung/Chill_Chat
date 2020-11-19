@@ -65,7 +65,7 @@ public class SignupActivity extends AppCompatActivity {
         String username = prefs.getString("Email", "Void");
         //Compare the stored username to Void to see if a user is currently signed it
         if (username.compareTo("Void") != 0) {
-            Intent intent = new Intent(this, ChatActivity.class);
+            Intent intent = new Intent(this, MenuActivity.class);
             startActivity(intent);
         }
     }
@@ -126,7 +126,7 @@ public class SignupActivity extends AppCompatActivity {
                             DatabaseService.updateUserData(email, firstName);
 
                             // Start ChatActivity
-                            startActivity(new Intent(SignupActivity.this, ChatActivity.class));
+                            startActivity(new Intent(SignupActivity.this, MenuActivity.class));
                             success = true;
                         } else {
                             // If sign in fails, display a message to the user.
