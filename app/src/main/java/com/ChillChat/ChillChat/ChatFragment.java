@@ -27,7 +27,6 @@ public class ChatFragment extends Fragment {
 
     ListView chatListView;
     EditText chatEditText;
-    Button logoutButton;
     Button sendButton;
 
     ChatAdapter messageAdapter;
@@ -38,7 +37,6 @@ public class ChatFragment extends Fragment {
 
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
-        logoutButton = root.findViewById(R.id.logoutButton);
         sendButton = root.findViewById(R.id.sendButton);
 
         chatMessages = new ArrayList<>();
@@ -54,22 +52,6 @@ public class ChatFragment extends Fragment {
                     messageAdapter.notifyDataSetChanged();
                     chatEditText.setText("");
                 }
-            }
-        });
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Open shared preference from file location and open editor
-                SharedPreferences prefs = getActivity().getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor edit = prefs.edit();
-                //Edit the DefaultEmail to be text from email and commit changes
-                edit.putString("Email", "Void");
-                edit.commit();
-                //Set success to false then open activity
-                LoginActivity.success = false;
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
             }
         });
 
