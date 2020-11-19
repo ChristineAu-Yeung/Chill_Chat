@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         String username = prefs.getString("Email", "Void");
         //Compare the stored username to Void to see if a user is currently signed it
         if (username.compareTo("Void") != 0) {
-            Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
             startActivity(intent);
         }
     }
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                             edit.putString("Email", email);
                             edit.commit();
                             // Sign in success, update UI with the signed-in user's information
-                            Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                             startActivity(intent);
                             success = true;
                         } else {
@@ -129,32 +129,32 @@ public class LoginActivity extends AppCompatActivity {
      * Opens the ChatActivity to allow user to anonymously chat
      */
     public void startAnon(View view) {
-        //Firebase creates Authentication for Anonymous ID
-        mAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    //Place Anonymous Data into Database
-                    updateUserData("null", "Anonymous");
-                    SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                    SharedPreferences.Editor edit = prefs.edit();
-                    edit.putString("Email", "Anonymous");
-                    edit.commit();
-                    Toast.makeText(LoginActivity.this, "Anonymous Login Complete.", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(LoginActivity.this, ChatActivity.class));
-                }
-            }
-        });
+//        //Firebase creates Authentication for Anonymous ID
+//        mAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if (task.isSuccessful()) {
+//                    //Place Anonymous Data into Database
+//                    updateUserData("null", "Anonymous");
+//                    SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+//                    SharedPreferences.Editor edit = prefs.edit();
+//                    edit.putString("Email", "Anonymous");
+//                    edit.commit();
+//                    Toast.makeText(LoginActivity.this, "Anonymous Login Complete.", Toast.LENGTH_LONG).show();
+//                    startActivity(new Intent(LoginActivity.this, ChatActivity.class));
+//                }
+//            }
+//        });
 
         //Old Code
-//        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-//        SharedPreferences.Editor edit = prefs.edit();
-//        //Edit the Email to be text from email and commit changes
-//        edit.putString("Email", "Anonymous");
-//        edit.commit();
-//        //Start ChatActivity with temporary email.
-//        Intent intent = new Intent(this, ChatActivity.class);
-//        startActivity(intent);
+        SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor edit = prefs.edit();
+        //Edit the Email to be text from email and commit changes
+        edit.putString("Email", "Anonymous");
+        edit.commit();
+        //Start ChatActivity with temporary email.
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
     }
 
     /**
