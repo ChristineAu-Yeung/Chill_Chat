@@ -41,6 +41,8 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         getWindow().setStatusBarColor(parseColor("#0080ff"));
 
+        final DatabaseService db = new DatabaseService();
+
         chatListView = findViewById(R.id.chatListView);
         chatEditText = findViewById(R.id.chatEditText);
         logoutButton = findViewById(R.id.logoutButton);
@@ -54,9 +56,20 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Get text from edit text
                 String text = chatEditText.getText().toString();
+
+                // If len > 0, add to chatMessages and notify the message adapter.
+                // Empty the EditText
                 if(text.length() != 0){
+                    // TESTING
+                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
                     chatMessages.add(text);
+                    db.sendMessage(message);
+                    // ---------------------------------------------
+
+
+//                    chatMessages.add(text);
                     messageAdapter.notifyDataSetChanged();
                     chatEditText.setText("");
                 }
@@ -122,12 +135,14 @@ public class ChatActivity extends AppCompatActivity {
 //                result = inflater.inflate(R.layout.chat_row_outgoing, null);
 //            }
 
-            result = result = inflater.inflate(R.layout.chat_row_outgoing, null);
+            result = inflater.inflate(R.layout.chat_row_outgoing, null);
 
-            TextView message = (TextView) result.findViewById(R.id.message_text);
+            TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position
 
             return result;
         }
     }
+
+
 }
