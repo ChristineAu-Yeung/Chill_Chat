@@ -35,6 +35,8 @@ public class ChatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        final DatabaseService db = new DatabaseService();
+
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -46,9 +48,20 @@ public class ChatFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Get text from edit text
                 String text = chatEditText.getText().toString();
+
+                // If len > 0, add to chatMessages and notify the message adapter.
+                // Empty the EditText
                 if(text.length() != 0){
+                    // TESTING
+                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
                     chatMessages.add(text);
+                    db.sendMessage(message);
+                    // ---------------------------------------------
+
+
+//                    chatMessages.add(text);
                     messageAdapter.notifyDataSetChanged();
                     chatEditText.setText("");
                 }
@@ -101,7 +114,7 @@ public class ChatFragment extends Fragment {
 
             result = inflater.inflate(R.layout.chat_row_outgoing, null);
 
-            TextView message = (TextView) result.findViewById(R.id.message_text);
+            TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position
 
             return result;
