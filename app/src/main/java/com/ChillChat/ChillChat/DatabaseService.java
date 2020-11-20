@@ -1,5 +1,6 @@
 package com.ChillChat.ChillChat;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -154,6 +155,12 @@ public class DatabaseService {
 
     }
 
+    /**
+     * TODO: Finish this function with realtime checks
+     *
+     * @param groupNumber The group from which we grab messages
+     * @return messages - The list of ChatMessage objects (might change later)
+     */
     public ArrayList<ChatMessage> getMessages(int groupNumber){
         ArrayList<ChatMessage> messages = new ArrayList<>();
 
@@ -175,6 +182,58 @@ public class DatabaseService {
             return user.getDisplayName();
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Gets the user's photo url (AKA profile pic).
+     *
+     * @return URI that directs to the user's stored image URL in firebase.
+     */
+    public static Uri getImageUrl(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null && user.isAnonymous()) {
+            return Uri.parse("https://i.redd.it/95pfytrlsl241.jpg"); // S M O O T H B R A I N
+        } else if (user != null) {
+            return user.getPhotoUrl();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * TODO Code this so it takes the image's location and stores it in firebase first
+     * Sets the user's profile pic to whatever they uploaded.
+     *
+     * @param imageUrl The URI of the new profile pic once it is updated on the databse
+     */
+    public static void setImageUrl(Uri imageUrl){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(user != null && user.isAnonymous()){
+            Log.w(TAG, "Anonymous users should not be able to change their profile pictures.");
+        }
+        if (user != null) {
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setPhotoUri(imageUrl)
+                    .build();
+
+            user.updateProfile(profileUpdates)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(TAG, "Profile picture updated.");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Profile picture was not updated.");
+                        }
+                    });
+        } else {
+            Log.w(TAG, "fuck. the user is nullllllllllllllllllll");
         }
     }
 }
