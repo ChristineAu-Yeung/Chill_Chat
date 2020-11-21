@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -14,8 +15,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,8 +54,11 @@ public class DatabaseService {
         // Create a user object for the document and add data to it.
         // This can be expanded in the future
         Map<String, Object> user = new HashMap<>();
+
+
         user.put("email", email);
         user.put("firstName", firstName);
+        user.put("dateRegistered", FieldValue.serverTimestamp());
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
@@ -134,6 +141,7 @@ public class DatabaseService {
         Map<String, Object> msg = new HashMap<>();
 
         // More data can be added just by writing lines similar to the two below
+
         msg.put("message", message.message);
         msg.put("sender", message.firstName);
 
@@ -156,15 +164,43 @@ public class DatabaseService {
     }
 
     /**
-     * TODO: Finish this function with realtime checks
+     * Gets all the messages for the corresponding group (see param) and update the list of messages
+     * Currently only gets the message, but has the capability to get other data based on the
+     * ChatMessage class and its properties.
+     *
+     *  TODO Update to send profile names as well
+     *  TODO See bugs sent in discord. They're annoying af.
      *
      * @param groupNumber The group from which we grab messages
-     * @return messages - The list of ChatMessage objects (might change later)
      */
-    public ArrayList<ChatMessage> getMessages(int groupNumber){
-        ArrayList<ChatMessage> messages = new ArrayList<>();
+    public void getMessages(int groupNumber) {
+        groupCollection.document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.w(TAG, "Listen failed.", error);
+                            return;
+                        }
 
-        return messages;
+                        if (snapshot != null && snapshot.exists()) {
+                            // Ignore the warning here
+                            ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
+
+                            for (int i = 0; i < incomingMessages.size() - 1; i++) {
+                                // DO NOT DELETE THE FOLLOWING TWO LINES FOR DEBUGGING PURPOSES //
+//                                ChatMessage newMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
+//                                messages.add(newMessage);
+                                ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+                            }
+
+                            Log.d(TAG, "New Message Query Complete");
+
+                        } else {
+                            Log.d(TAG, "Current data: null");
+                        }
+                    }
+                });
     }
 
     /**
@@ -190,7 +226,7 @@ public class DatabaseService {
      *
      * @return URI that directs to the user's stored image URL in firebase.
      */
-    public static Uri getImageUrl(){
+    public static Uri getImageUrl() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null && user.isAnonymous()) {
@@ -208,10 +244,10 @@ public class DatabaseService {
      *
      * @param imageUrl The URI of the new profile pic once it is updated on the databse
      */
-    public static void setImageUrl(Uri imageUrl){
+    public static void setImageUrl(Uri imageUrl) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(user != null && user.isAnonymous()){
+        if (user != null && user.isAnonymous()) {
             Log.w(TAG, "Anonymous users should not be able to change their profile pictures.");
         }
         if (user != null) {

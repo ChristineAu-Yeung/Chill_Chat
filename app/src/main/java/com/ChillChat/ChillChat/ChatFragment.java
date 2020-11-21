@@ -30,12 +30,16 @@ public class ChatFragment extends Fragment {
     Button sendButton;
 
     ChatAdapter messageAdapter;
-    ArrayList<String> chatMessages;
+
+    public static ArrayList<String> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
         final DatabaseService db = new DatabaseService();
+
+        // Gets all the messages and keeps getting em
+        db.getMessages(0);
 
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
@@ -53,15 +57,20 @@ public class ChatFragment extends Fragment {
 
                 // If len > 0, add to chatMessages and notify the message adapter.
                 // Empty the EditText
-                if(text.length() != 0){
+                if (text.trim().length() > 0 && text.trim().length() == 0) {
+
+                    //Shits not working
+                    //Toast toast = Toast.makeText(ChatFragment.this, "Empty text try again", Toast.LENGTH_SHORT);
+                    //toast.show();
+
+                    chatEditText.setText("");
+                } else if (text.length() > 0) {
                     // TESTING
                     ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
                     chatMessages.add(text);
                     db.sendMessage(message);
                     // ---------------------------------------------
 
-
-//                    chatMessages.add(text);
                     messageAdapter.notifyDataSetChanged();
                     chatEditText.setText("");
                 }
@@ -72,8 +81,8 @@ public class ChatFragment extends Fragment {
     }
 
     /**
-     Runs when onStart() state is called.
-     This function is used to check if the user is already signed in, preventing invalid login
+     * Runs when onStart() state is called.
+     * This function is used to check if the user is already signed in, preventing invalid login
      */
     @Override
     public void onStart() {
@@ -82,26 +91,26 @@ public class ChatFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(FILE_NAME, MODE_PRIVATE);
         String username = prefs.getString("Email", "Void");
         //Compare the stored username to Void to see if a user is currently signed it
-        if(username.compareTo("Void") == 0) {
+        if (username.compareTo("Void") == 0) {
             Intent intent = new Intent(this.getActivity(), LoginActivity.class);
             startActivity(intent);
         }
     }
 
     private class ChatAdapter extends ArrayAdapter<String> {
-        public ChatAdapter(Context context){
+        public ChatAdapter(Context context) {
             super(context, 0);
         }
 
-        public int getCount(){
+        public int getCount() {
             return chatMessages.size();
         }
 
-        public String getItem(int position){
+        public String getItem(int position) {
             return chatMessages.get(position);
         }
 
-        public View getView(int position, View convertView, ViewGroup parent){
+        public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
 
             View result = null;
