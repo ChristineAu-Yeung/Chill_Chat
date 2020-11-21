@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -14,8 +15,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,6 +171,29 @@ public class DatabaseService {
      */
     public ArrayList<ChatMessage> getMessages(int groupNumber){
         ArrayList<ChatMessage> messages = new ArrayList<>();
+
+        groupCollection.document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
+                        if(error != null) {
+                            Log.w(TAG, "Listen failed.", error);
+                            return;
+                        }
+
+                        if (snapshot != null && snapshot.exists()) {
+                            Log.i(TAG, "Current data: " + snapshot.getData());
+
+//                            for (int i = 0; i < snapshot.getData().size() - 1; i++){
+//                                Log.i(TAG, "Current data: " + snapshot.getData().containsKey("message"));
+//
+//                            }
+
+                        } else {
+                            Log.d(TAG, "Current data: null");
+                        }
+                    }
+                });
 
         return messages;
     }

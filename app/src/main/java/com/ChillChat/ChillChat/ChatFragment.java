@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -38,6 +37,9 @@ public class ChatFragment extends Fragment {
 
         final DatabaseService db = new DatabaseService();
 
+        // Gets all the messages and keeps getting em
+        db.getMessages(0);
+
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -54,7 +56,7 @@ public class ChatFragment extends Fragment {
 
                 // If len > 0, add to chatMessages and notify the message adapter.
                 // Empty the EditText
-                if(text.length() > 0 && text.trim().length() == 0){
+                if(text.trim().length() > 0 && text.trim().length() == 0){
 
                     //Shits not working
                     //Toast toast = Toast.makeText(ChatFragment.this, "Empty text try again", Toast.LENGTH_SHORT);
