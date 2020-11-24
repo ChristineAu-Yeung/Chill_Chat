@@ -95,6 +95,28 @@ public class DatabaseService {
                 });
     }
 
+    //Function to Delete User data from Database
+    void deleteUserData(String uid){
+        userCollection.document(uid).delete();
+        Log.i(TAG, "User Deleted");
+    }
+
+    /**
+     * Deletes Anonymous Users data on Logout
+     * No parameter required since currentUser is fetched and deleteUserData is called
+     */
+
+     static void deleteAnonymousUser(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseService db = new DatabaseService();
+        String userID = user.getUid();
+
+        if (user.isAnonymous()){
+            user.delete();
+            db.deleteUserData(userID);
+        }
+    }
+
     /**
      * Update the user's document as well as profile data
      * This function should stay private to this class
@@ -202,6 +224,7 @@ public class DatabaseService {
                     }
                 });
     }
+
 
     /**
      * @return - Null if the user does not exist
