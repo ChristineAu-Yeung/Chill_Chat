@@ -1,14 +1,5 @@
 <resources>
     <string name="app_name">Chill Chat</string>
-    <string name="edit">Edit</string>
-    <string name="username">Username</string>
-    <string name="name">Name</string>
-    <string name="name_hint">Enter your name</string>
-    <string name="age">Age</string>
-    <string name="age_hint">Enter your age</string>
-    <string name="bio_hint">Enter a bio</string>
-    <string name="registered">Registered since...</string>
-    <string name="registeredDate">11/15/2020</string>
     <string name="title_activity_menu">MenuActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

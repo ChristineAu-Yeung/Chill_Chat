@@ -13,9 +13,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DatabaseService {
@@ -24,12 +26,17 @@ public class DatabaseService {
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    // Create user document
+    static FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
     // This is a reference to all of our different collections. This way we don't have to type a
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
 
+    public List<String> userData;
     /**
+     * Helper Function, this is a helper method that should stay private to this class
      * This function uses the .set() function to create user documents for the database.
      * This is where we store extra user data after they created after successful registration.
      * Basic information can be access with FirebaseAuth.getInstance().getUser . . .getEmail(), etc.
@@ -38,7 +45,7 @@ public class DatabaseService {
      * @param email     Email address of the user (for testing)
      * @param firstName First name of the user (to add to the user record)
      */
-    void setUserData(String uid, String email, String firstName) {
+    private void setUserData(String uid, String email, String firstName) {
         // Create a user object for the document and add data to it.
         // This can be expanded in the future
         Map<String, Object> user = new HashMap<>();
@@ -57,6 +64,33 @@ public class DatabaseService {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
+
+    public void getUserData(){
+        DocumentReference reference = userCollection.document(user.getUid());
+
+        reference.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()){
+                            Map<String, Object> data = documentSnapshot.getData();
+                            //log and add every field data in the user document
+                            for(Object value : data.values()){
+                                //Log.i(TAG, (String) value);
+                                userData.add((String) value);
+                            }
+                        } else {
+                            Log.w(TAG, "Document does not exist");
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Failed to retrieve data", e);
                     }
                 });
     }
@@ -82,13 +116,10 @@ public class DatabaseService {
 
     /**
      * Update the user's document as well as profile data
-     * This function should stay private to this class
      * @param firstName User's first name
      * @param email User's email address
      */
     static void updateUserData(String email, String firstName){
-        // Create user document
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseService db = new DatabaseService();
         db.setUserData(user.getUid(), email, firstName);
 
