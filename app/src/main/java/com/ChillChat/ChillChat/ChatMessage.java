@@ -1,11 +1,13 @@
 package com.ChillChat.ChillChat;
 
+import java.util.Calendar;
+
 public class ChatMessage {
 
     String message;
     String firstName;
     int groupNumber;
-    String messageID;
+    int messageID;
 //        String imageUrl; // For the future
 
     public ChatMessage(String messageToBeSent, String userFirstName, int groupNum) {
@@ -13,12 +15,13 @@ public class ChatMessage {
         firstName = userFirstName;
         groupNumber = groupNum;
 
-        messageID = this.generateID(messageToBeSent, userFirstName);
+        messageID = this.generateID();
     }
 
-    private String generateID(String message, String userFirstName){
+    private int generateID() {
 
-//        message.
-        return message + userFirstName;
+        String currentTime = Calendar.getInstance().getTime().toString();
+
+        return (this.firstName + this.message + currentTime).hashCode();
     }
 }
