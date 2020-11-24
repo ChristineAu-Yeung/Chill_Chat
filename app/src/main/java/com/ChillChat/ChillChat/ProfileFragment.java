@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -62,6 +63,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void PullProfile(){
-        db.getUserData();
+        List<String> userData = db.getUserData();
     }
 }

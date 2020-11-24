@@ -68,7 +68,7 @@ public class DatabaseService {
                 });
     }
 
-    public void getUserData(){
+    public List<String> getUserData(){
         DocumentReference reference = userCollection.document(user.getUid());
 
         reference.get()
@@ -78,10 +78,9 @@ public class DatabaseService {
                         if (documentSnapshot.exists()){
                             Map<String, Object> data = documentSnapshot.getData();
                             //log and add every field data in the user document
-                            for(Object value : data.values()){
-                                //Log.i(TAG, (String) value);
-                                userData.add((String) value);
-                            }
+
+                            userData.add((String) data.get("email"));
+                            userData.add((String) data.get("firstName"));
                         } else {
                             Log.w(TAG, "Document does not exist");
                         }
@@ -93,6 +92,8 @@ public class DatabaseService {
                         Log.w(TAG, "Failed to retrieve data", e);
                     }
                 });
+
+        return userData;
     }
 
     void setGroupData(String id, String name) {
