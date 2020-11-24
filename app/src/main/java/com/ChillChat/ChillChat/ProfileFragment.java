@@ -50,6 +50,8 @@ public class ProfileFragment extends Fragment {
 
         PullProfile();
 
+//        Log.i(TAG, userData.get(0));
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +71,6 @@ public class ProfileFragment extends Fragment {
 
         db.getUserData();
 
-        Log.i(TAG, userData.get(0));
+//        Log.i(TAG, userData.get(0));
     }
 }

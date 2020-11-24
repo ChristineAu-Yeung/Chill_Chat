@@ -68,38 +68,38 @@ public class DatabaseService {
                 });
     }
 
-    public void getUserData(){
+    public void getUserData() {
         DocumentReference reference = userCollection.document(user.getUid());
 
         reference.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()){
-                            Map<String, Object> data = documentSnapshot.getData();
-                            //log and add every field data in the user document
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
 
-                            for(Object value: data.values()){
-                                Log.i(TAG, (String) value);
+                            DocumentSnapshot document = task.getResult();
+
+                            if (document.exists()) {
+                                Map<String, Object> data = document.getData();
+
+                                //log and add every field data in the user document
+                                ProfileFragment.userData.add(data.get("firstName").toString());
+                                Log.i(TAG, "firstName: " + ProfileFragment.userData.get(0));
+
+                                ProfileFragment.userData.add(data.get("email").toString());
+                                Log.i(TAG, "email: " + ProfileFragment.userData.get(1));
+
+                                //userData.add(data.get("firstName").toString());
+                            } else {
+                                Log.d(TAG, "No such document");
                             }
 
-                            String fuck = data.get("firstName").toString();
-                            ProfileFragment.userData.add(fuck);
-
-                            //userData.add(data.get("firstName").toString());
                         } else {
-                            Log.w(TAG, "Document does not exist");
+                            Log.w(TAG, "get failed with ", task.getException());
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Failed to retrieve data", e);
                     }
                 });
 
-        return;
     }
 
     void setGroupData(String id, String name) {
@@ -123,10 +123,11 @@ public class DatabaseService {
 
     /**
      * Update the user's document as well as profile data
+     *
      * @param firstName User's first name
-     * @param email User's email address
+     * @param email     User's email address
      */
-    static void updateUserData(String email, String firstName){
+    static void updateUserData(String email, String firstName) {
         DatabaseService db = new DatabaseService();
         db.setUserData(user.getUid(), email, firstName);
 
