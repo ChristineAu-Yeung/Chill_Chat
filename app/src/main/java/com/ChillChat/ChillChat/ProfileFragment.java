@@ -27,18 +27,21 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class ProfileFragment extends Fragment {
 
+    protected DatabaseService db = new DatabaseService();
+    public static ArrayList<String> userData;
     private static final String TAG = "ProfileFragment";
     private Button editButton;
     private EditText name;
     private EditText age;
     private EditText bio;
     private TextView joinDate;
-    protected DatabaseService db = new DatabaseService();
+
     //PLEASE REFER TO ChatFragment TO SEE HOW THINGS NEED TO BE ALTERED FOR A FRAGMENT TYPE ACTIVITY!!! - Ryan
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        userData = new ArrayList<>();
         editButton = (Button) root.findViewById(R.id.editButton);
         name = (EditText) root.findViewById(R.id.nameEditText);
         age = (EditText) root.findViewById(R.id.ageLabelEditText);
@@ -63,6 +66,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void PullProfile(){
-        List<String> userData = db.getUserData();
+
+        db.getUserData();
+
+        Log.i(TAG, userData.get(0));
     }
 }

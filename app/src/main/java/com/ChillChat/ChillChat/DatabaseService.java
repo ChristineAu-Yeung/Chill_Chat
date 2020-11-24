@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class DatabaseService {
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
 
-    public List<String> userData;
     /**
      * Helper Function, this is a helper method that should stay private to this class
      * This function uses the .set() function to create user documents for the database.
@@ -68,7 +68,7 @@ public class DatabaseService {
                 });
     }
 
-    public List<String> getUserData(){
+    public void getUserData(){
         DocumentReference reference = userCollection.document(user.getUid());
 
         reference.get()
@@ -79,8 +79,14 @@ public class DatabaseService {
                             Map<String, Object> data = documentSnapshot.getData();
                             //log and add every field data in the user document
 
-                            userData.add((String) data.get("email"));
-                            userData.add((String) data.get("firstName"));
+                            for(Object value: data.values()){
+                                Log.i(TAG, (String) value);
+                            }
+
+                            String fuck = data.get("firstName").toString();
+                            ProfileFragment.userData.add(fuck);
+
+                            //userData.add(data.get("firstName").toString());
                         } else {
                             Log.w(TAG, "Document does not exist");
                         }
@@ -93,7 +99,7 @@ public class DatabaseService {
                     }
                 });
 
-        return userData;
+        return;
     }
 
     void setGroupData(String id, String name) {
