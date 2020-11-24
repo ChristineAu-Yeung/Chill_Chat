@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +19,20 @@ import androidx.fragment.app.Fragment;
 
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class ChatFragment extends Fragment {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+    private static final String TAG = "ChatFragment";
 
     ListView chatListView;
     EditText chatEditText;
     Button sendButton;
 
-    ChatAdapter messageAdapter;
-
+    static ChatAdapter messageAdapter;
     public static ArrayList<String> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +97,15 @@ public class ChatFragment extends Fragment {
             Intent intent = new Intent(this.getActivity(), LoginActivity.class);
             startActivity(intent);
         }
+    }
+
+    /**
+     * Helper function that lets DatabaseService notify messageAdapter that the message list
+     * was updated
+     */
+    public static void externallyCallDatasetChanged(){
+        messageAdapter.notifyDataSetChanged();
+        Log.i(TAG, "Externally called notifyDataSetChanged()");
     }
 
     private class ChatAdapter extends ArrayAdapter<String> {

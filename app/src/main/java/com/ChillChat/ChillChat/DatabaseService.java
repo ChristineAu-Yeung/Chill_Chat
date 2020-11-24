@@ -144,6 +144,7 @@ public class DatabaseService {
 
         msg.put("message", message.message);
         msg.put("sender", message.firstName);
+        msg.put("msgId", message.messageID);
 
         groupCollection
                 .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
@@ -167,9 +168,9 @@ public class DatabaseService {
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
-     *
-     *  TODO Update to send profile names as well
-     *  TODO See bugs sent in discord. They're annoying af.
+     * <p>
+     * TODO Update to send profile names as well
+     * TODO See bugs sent in discord. They're annoying af.
      *
      * @param groupNumber The group from which we grab messages
      */
@@ -187,14 +188,24 @@ public class DatabaseService {
                             // Ignore the warning here
                             ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
 
-                            for (int i = 0; i < incomingMessages.size() - 1; i++) {
-                                // DO NOT DELETE THE FOLLOWING TWO LINES FOR DEBUGGING PURPOSES //
+                            if (incomingMessages != null && incomingMessages.size() > ChatFragment.chatMessages.size()) {
+                                for (int i = 0; i < incomingMessages.size() - 1; i++) {
+                                    // DO NOT DELETE THE FOLLOWING TWO LINES FOR DEBUGGING PURPOSES //
 //                                ChatMessage newMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
 //                                messages.add(newMessage);
-                                ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+                                    // TODO revert this if statement
+                                    if (! ChatFragment.chatMessages.contains(incomingMessages.get(i).get("message"))){
+                                        ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+                                        ChatFragment.externallyCallDatasetChanged();
+                                    }
+
+                                }
+
+                                Log.d(TAG, "New Message Query Complete");
+                            } else {
+                                Log.d(TAG, "Skipped new message query. Existing data is up to date.");
                             }
 
-                            Log.d(TAG, "New Message Query Complete");
 
                         } else {
                             Log.d(TAG, "Current data: null");
