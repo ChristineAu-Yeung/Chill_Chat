@@ -166,9 +166,6 @@ public class DatabaseService {
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
-     * <p>
-     * TODO Update to send profile names as well
-     * TODO See bugs sent in discord. They're annoying af.
      *
      * @param groupNumber The group from which we grab messages
      */
@@ -186,13 +183,15 @@ public class DatabaseService {
                             // Ignore the warning here
                             ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
 
-                            if (incomingMessages != null && incomingMessages.size() >= ChatFragment.chatMessages.size()) {
-                                for (int i = 0; i < incomingMessages.size() - 1; i++) {
-                                    // TODO change this if statement to reflect the unique ids
-                                    if (! ChatFragment.chatMessages.contains(incomingMessages.get(i).get("message"))){
-//                                        ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+                            if (incomingMessages != null) {
 
-                                        ChatMessage incomingMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
+                                for (int i = 0; i < incomingMessages.size() - 1; i++) {
+
+                                    ChatMessage incomingMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1, incomingMessages.get(i).get("msgId"));
+
+                                    if(! ChatFragment.chatMessages.contains(incomingMessage)){
+                                        Log.d(TAG, "New message detected and being added to message array");
+//
                                         ChatFragment.chatMessages.add(incomingMessage);
                                         ChatFragment.externallyCallDatasetChanged();
                                     }

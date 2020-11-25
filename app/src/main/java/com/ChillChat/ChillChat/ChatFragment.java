@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -33,7 +32,6 @@ public class ChatFragment extends Fragment {
     Button sendButton;
 
     static ChatAdapter messageAdapter;
-//    public static ArrayList<String> chatMessages;
     public static ArrayList<ChatMessage> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,14 +66,13 @@ public class ChatFragment extends Fragment {
 
                     chatEditText.setText("");
                 } else if (text.length() > 0) {
-                    // TESTING
-                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
-//                    chatMessages.add(text);
+
+                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0, null);
                     chatMessages.add(message);
                     db.sendMessage(message);
-                    // ---------------------------------------------
 
                     messageAdapter.notifyDataSetChanged();
+
                     chatEditText.setText("");
                 }
             }
