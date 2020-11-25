@@ -33,7 +33,8 @@ public class ChatFragment extends Fragment {
     Button sendButton;
 
     static ChatAdapter messageAdapter;
-    public static ArrayList<String> chatMessages;
+//    public static ArrayList<String> chatMessages;
+    public static ArrayList<ChatMessage> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -69,7 +70,8 @@ public class ChatFragment extends Fragment {
                 } else if (text.length() > 0) {
                     // TESTING
                     ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
-                    chatMessages.add(text);
+//                    chatMessages.add(text);
+                    chatMessages.add(message);
                     db.sendMessage(message);
                     // ---------------------------------------------
 
@@ -118,7 +120,7 @@ public class ChatFragment extends Fragment {
         }
 
         public String getItem(int position) {
-            return chatMessages.get(position);
+            return chatMessages.get(position).message;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {

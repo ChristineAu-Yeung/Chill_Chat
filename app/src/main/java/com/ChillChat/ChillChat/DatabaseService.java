@@ -35,8 +35,6 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
-    // make a user collection
-    // Make a timestamp on registration
     // Make a blank age
     // Make a blank bio
     // Make a default profile pic
@@ -188,17 +186,16 @@ public class DatabaseService {
                             // Ignore the warning here
                             ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
 
-                            if (incomingMessages != null && incomingMessages.size() > ChatFragment.chatMessages.size()) {
+                            if (incomingMessages != null && incomingMessages.size() >= ChatFragment.chatMessages.size()) {
                                 for (int i = 0; i < incomingMessages.size() - 1; i++) {
-                                    // DO NOT DELETE THE FOLLOWING TWO LINES FOR DEBUGGING PURPOSES //
-//                                ChatMessage newMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
-//                                messages.add(newMessage);
-                                    // TODO revert this if statement
+                                    // TODO change this if statement to reflect the unique ids
                                     if (! ChatFragment.chatMessages.contains(incomingMessages.get(i).get("message"))){
-                                        ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+//                                        ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+
+                                        ChatMessage incomingMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
+                                        ChatFragment.chatMessages.add(incomingMessage);
                                         ChatFragment.externallyCallDatasetChanged();
                                     }
-
                                 }
 
                                 Log.d(TAG, "New Message Query Complete");
