@@ -143,6 +143,7 @@ public class DatabaseService {
         msg.put("message", message.message);
         msg.put("sender", message.firstName);
         msg.put("msgId", message.messageID);
+        msg.put("userID", message.userID);
 
         groupCollection
                 .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
@@ -187,9 +188,14 @@ public class DatabaseService {
 
                                 for (int i = 0; i < incomingMessages.size() - 1; i++) {
 
-                                    ChatMessage incomingMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1, incomingMessages.get(i).get("msgId"));
+                                    ChatMessage incomingMessage = new ChatMessage(
+                                            incomingMessages.get(i).get("message"),
+                                            incomingMessages.get(i).get("sender"),
+                                            1,
+                                            incomingMessages.get(i).get("msgId"),
+                                            incomingMessages.get(i).get("userID"));
 
-                                    if(! ChatFragment.chatMessages.contains(incomingMessage)){
+                                    if (!ChatFragment.chatMessages.contains(incomingMessage)) {
                                         Log.d(TAG, "New message detected and being added to message array");
 //
                                         ChatFragment.chatMessages.add(incomingMessage);
@@ -278,5 +284,16 @@ public class DatabaseService {
         } else {
             Log.w(TAG, "fuck. the user is nullllllllllllllllllll");
         }
+    }
+
+    /**
+     * Get the current user's UID. This helps reduce clutter.
+     * We no longer have to run the first line in this function.
+     *
+     * @return - [STRING] Current user's UID
+     */
+    public static String getUID() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user.getUid();
     }
 }

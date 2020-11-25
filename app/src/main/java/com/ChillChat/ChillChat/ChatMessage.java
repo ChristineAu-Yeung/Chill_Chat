@@ -7,8 +7,11 @@ public class ChatMessage {
 
     String message;
     String firstName;
-    int groupNumber;
     String messageID;
+    String userID;
+
+    int groupNumber;
+
 //        String imageUrl; // For the future
 
     /**
@@ -19,11 +22,13 @@ public class ChatMessage {
      * @param groupNum        - [INT] Group number, to see which group the message belongs in
      * @param msgID           - [STRING] Null if the message is new. Not null if message is being
      *                        imported from the database. Unique ID # for the message so there are no dupes
+     * @param UID             - [STRING] Sender's UID
      */
-    public ChatMessage(String messageToBeSent, String userFirstName, int groupNum, String msgID) {
+    public ChatMessage(String messageToBeSent, String userFirstName, int groupNum, String msgID, String UID) {
         message = messageToBeSent;
         firstName = userFirstName;
         groupNumber = groupNum;
+        userID = UID;
 
         // If the message is null, we generate a new ID.
         // This is so that when we get message data from the database, it doesn't generate a new ID.

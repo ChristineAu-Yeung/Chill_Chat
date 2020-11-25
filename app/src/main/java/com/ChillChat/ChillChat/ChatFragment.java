@@ -67,7 +67,12 @@ public class ChatFragment extends Fragment {
                     chatEditText.setText("");
                 } else if (text.length() > 0) {
 
-                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0, null);
+                    ChatMessage message = new ChatMessage(
+                            text,
+                            DatabaseService.getDisplayName(),
+                            0,
+                            null, // NULL because we want to generate a new ID
+                            DatabaseService.getUID());
                     chatMessages.add(message);
                     db.sendMessage(message);
 
