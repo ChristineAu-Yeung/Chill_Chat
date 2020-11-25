@@ -35,8 +35,6 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
-    // make a user collection
-    // Make a timestamp on registration
     // Make a blank age
     // Make a blank bio
     // Make a default profile pic
@@ -144,6 +142,8 @@ public class DatabaseService {
 
         msg.put("message", message.message);
         msg.put("sender", message.firstName);
+        msg.put("msgId", message.messageID);
+        msg.put("userID", message.userID);
 
         groupCollection
                 .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
@@ -168,9 +168,6 @@ public class DatabaseService {
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
      *
-     *  TODO Update to send profile names as well
-     *  TODO See bugs sent in discord. They're annoying af.
-     *
      * @param groupNumber The group from which we grab messages
      */
     public void getMessages(int groupNumber) {
@@ -187,14 +184,30 @@ public class DatabaseService {
                             // Ignore the warning here
                             ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
 
-                            for (int i = 0; i < incomingMessages.size() - 1; i++) {
-                                // DO NOT DELETE THE FOLLOWING TWO LINES FOR DEBUGGING PURPOSES //
-//                                ChatMessage newMessage = new ChatMessage(incomingMessages.get(i).get("message"), incomingMessages.get(i).get("sender"), 1);
-//                                messages.add(newMessage);
-                                ChatFragment.chatMessages.add(incomingMessages.get(i).get("message"));
+                            if (incomingMessages != null) {
+
+                                for (int i = 0; i < incomingMessages.size() - 1; i++) {
+
+                                    ChatMessage incomingMessage = new ChatMessage(
+                                            incomingMessages.get(i).get("message"),
+                                            incomingMessages.get(i).get("sender"),
+                                            1,
+                                            incomingMessages.get(i).get("msgId"),
+                                            incomingMessages.get(i).get("userID"));
+
+                                    if (!ChatFragment.chatMessages.contains(incomingMessage)) {
+                                        Log.d(TAG, "New message detected and being added to message array");
+//
+                                        ChatFragment.chatMessages.add(incomingMessage);
+                                        ChatFragment.externallyCallDatasetChanged();
+                                    }
+                                }
+
+                                Log.d(TAG, "New Message Query Complete");
+                            } else {
+                                Log.d(TAG, "Skipped new message query. Existing data is up to date.");
                             }
 
-                            Log.d(TAG, "New Message Query Complete");
 
                         } else {
                             Log.d(TAG, "Current data: null");
@@ -271,5 +284,16 @@ public class DatabaseService {
         } else {
             Log.w(TAG, "fuck. the user is nullllllllllllllllllll");
         }
+    }
+
+    /**
+     * Get the current user's UID. This helps reduce clutter.
+     * We no longer have to run the first line in this function.
+     *
+     * @return - [STRING] Current user's UID
+     */
+    public static String getUID() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user.getUid();
     }
 }
