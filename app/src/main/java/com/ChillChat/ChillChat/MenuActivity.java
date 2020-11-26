@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -26,6 +27,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 import static android.graphics.Color.parseColor;
 
@@ -69,7 +71,7 @@ public class MenuActivity extends AppCompatActivity {
                     edit.putString("Email", "Void");
                     edit.commit();
                     //RYAN - If anonymous user must delete from the database below
-
+                    deleteAnonymousUser();
                     //Set success to false then open activity
                     LoginActivity.success = false;
                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
