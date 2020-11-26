@@ -103,7 +103,6 @@ public class DatabaseService {
      * Deletes Anonymous Users data on Logout
      * No parameter required since currentUser is fetched and deleteUserData is called
      */
-
      static void deleteAnonymousUser(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseService db = new DatabaseService();

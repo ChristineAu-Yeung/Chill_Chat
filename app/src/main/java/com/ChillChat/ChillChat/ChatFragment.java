@@ -3,6 +3,7 @@ package com.ChillChat.ChillChat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,13 +12,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 
+import java.net.URI;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -125,18 +130,33 @@ public class ChatFragment extends Fragment {
             return chatMessages.get(position).message;
         }
 
+        public ChatMessage getChatMessage(int position) { return chatMessages.get(position); }
+
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
-
             View result = null;
 
-//            if (position % 2 == 0){
-//                result = inflater.inflate(R.layout.chat_row_incoming, null);
-//            } else {
-//                result = inflater.inflate(R.layout.chat_row_outgoing, null);
-//            }
+            DatabaseService db = new DatabaseService();
+            String currentUser = db.getUID();
+            ChatMessage chatObject = getChatMessage(position);
+            ImageView userPic;
 
-            result = inflater.inflate(R.layout.chat_row_outgoing, null);
+            if (currentUser.equals(chatObject.userID)) {
+                result = inflater.inflate(R.layout.chat_row_outgoing, null);
+                userPic = result.findViewById(R.id.outUser);
+            } else {
+                result = inflater.inflate(R.layout.chat_row_incoming, null);
+                userPic = result.findViewById(R.id.incUser);
+            }
+
+            Uri userIcon = db.getImageUrl();
+            if(userIcon != null) {
+                String url = userIcon.toString();
+                Picasso.get().load(url).into(userPic);
+            } else {
+                //Temp - S M O O T H B R A I N
+                Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+            }
 
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position

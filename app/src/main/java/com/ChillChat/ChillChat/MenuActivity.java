@@ -70,7 +70,7 @@ public class MenuActivity extends AppCompatActivity {
                     //Edit the DefaultEmail to be text from email and commit changes
                     edit.putString("Email", "Void");
                     edit.commit();
-                    //RYAN - If anonymous user must delete from the database below
+                    //If anonymous user must delete from the database below
                     deleteAnonymousUser();
                     //Set success to false then open activity
                     LoginActivity.success = false;
