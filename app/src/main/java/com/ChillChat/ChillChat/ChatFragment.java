@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +25,14 @@ import static android.content.Context.MODE_PRIVATE;
 public class ChatFragment extends Fragment {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+    private static final String TAG = "ChatFragment";
 
     ListView chatListView;
     EditText chatEditText;
     Button sendButton;
 
-    ChatAdapter messageAdapter;
-
-    public static ArrayList<String> chatMessages;
+    static ChatAdapter messageAdapter;
+    public static ArrayList<ChatMessage> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -65,13 +66,18 @@ public class ChatFragment extends Fragment {
 
                     chatEditText.setText("");
                 } else if (text.length() > 0) {
-                    // TESTING
-                    ChatMessage message = new ChatMessage(text, DatabaseService.getDisplayName(), 0);
-                    chatMessages.add(text);
+
+                    ChatMessage message = new ChatMessage(
+                            text,
+                            DatabaseService.getDisplayName(),
+                            0,
+                            null, // NULL because we want to generate a new ID
+                            DatabaseService.getUID());
+                    chatMessages.add(message);
                     db.sendMessage(message);
-                    // ---------------------------------------------
 
                     messageAdapter.notifyDataSetChanged();
+
                     chatEditText.setText("");
                 }
             }
@@ -97,6 +103,15 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    /**
+     * Helper function that lets DatabaseService notify messageAdapter that the message list
+     * was updated
+     */
+    public static void externallyCallDatasetChanged(){
+        messageAdapter.notifyDataSetChanged();
+        Log.i(TAG, "Externally called notifyDataSetChanged()");
+    }
+
     private class ChatAdapter extends ArrayAdapter<String> {
         public ChatAdapter(Context context) {
             super(context, 0);
@@ -107,7 +122,7 @@ public class ChatFragment extends Fragment {
         }
 
         public String getItem(int position) {
-            return chatMessages.get(position);
+            return chatMessages.get(position).message;
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
