@@ -9,10 +9,9 @@
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/logoutButton"
-        />
+        android:text="Send" />
 
     <EditText
         android:id="@+id/chatEditText"
@@ -24,22 +23,16 @@
         android:ems="10"
         android:inputType="textPersonName" />
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:text="Logout" />
-
     <ListView
         android:id="@+id/chatListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/logoutButton"
+        android:layout_above="@id/sendButton"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll">
     </ListView>
 
 </RelativeLayout>

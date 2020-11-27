@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,21 +25,25 @@ import static android.content.Context.MODE_PRIVATE;
 public class ChatFragment extends Fragment {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+    private static final String TAG = "ChatFragment";
 
     ListView chatListView;
     EditText chatEditText;
-    Button logoutButton;
     Button sendButton;
 
-    ChatAdapter messageAdapter;
-    ArrayList<String> chatMessages;
+    static ChatAdapter messageAdapter;
+    public static ArrayList<ChatMessage> chatMessages;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        final DatabaseService db = new DatabaseService();
+
+        // Gets all the messages and keeps getting em
+        db.getMessages(0);
+
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
-        logoutButton = root.findViewById(R.id.logoutButton);
         sendButton = root.findViewById(R.id.sendButton);
 
         chatMessages = new ArrayList<>();
@@ -48,28 +53,33 @@ public class ChatFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Get text from edit text
                 String text = chatEditText.getText().toString();
-                if(text.length() != 0){
-                    chatMessages.add(text);
+
+                // If len > 0, add to chatMessages and notify the message adapter.
+                // Empty the EditText
+                if (text.trim().length() > 0 && text.trim().length() == 0) {
+
+                    //Shits not working
+                    //Toast toast = Toast.makeText(ChatFragment.this, "Empty text try again", Toast.LENGTH_SHORT);
+                    //toast.show();
+
+                    chatEditText.setText("");
+                } else if (text.length() > 0) {
+
+                    ChatMessage message = new ChatMessage(
+                            text,
+                            DatabaseService.getDisplayName(),
+                            0,
+                            null, // NULL because we want to generate a new ID
+                            DatabaseService.getUID());
+                    chatMessages.add(message);
+                    db.sendMessage(message);
+
                     messageAdapter.notifyDataSetChanged();
+
                     chatEditText.setText("");
                 }
-            }
-        });
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Open shared preference from file location and open editor
-                SharedPreferences prefs = getActivity().getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor edit = prefs.edit();
-                //Edit the DefaultEmail to be text from email and commit changes
-                edit.putString("Email", "Void");
-                edit.commit();
-                //Set success to false then open activity
-                LoginActivity.success = false;
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -77,8 +87,8 @@ public class ChatFragment extends Fragment {
     }
 
     /**
-     Runs when onStart() state is called.
-     This function is used to check if the user is already signed in, preventing invalid login
+     * Runs when onStart() state is called.
+     * This function is used to check if the user is already signed in, preventing invalid login
      */
     @Override
     public void onStart() {
@@ -87,26 +97,35 @@ public class ChatFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(FILE_NAME, MODE_PRIVATE);
         String username = prefs.getString("Email", "Void");
         //Compare the stored username to Void to see if a user is currently signed it
-        if(username.compareTo("Void") == 0) {
+        if (username.compareTo("Void") == 0) {
             Intent intent = new Intent(this.getActivity(), LoginActivity.class);
             startActivity(intent);
         }
     }
 
+    /**
+     * Helper function that lets DatabaseService notify messageAdapter that the message list
+     * was updated
+     */
+    public static void externallyCallDatasetChanged(){
+        messageAdapter.notifyDataSetChanged();
+        Log.i(TAG, "Externally called notifyDataSetChanged()");
+    }
+
     private class ChatAdapter extends ArrayAdapter<String> {
-        public ChatAdapter(Context context){
+        public ChatAdapter(Context context) {
             super(context, 0);
         }
 
-        public int getCount(){
+        public int getCount() {
             return chatMessages.size();
         }
 
-        public String getItem(int position){
-            return chatMessages.get(position);
+        public String getItem(int position) {
+            return chatMessages.get(position).message;
         }
 
-        public View getView(int position, View convertView, ViewGroup parent){
+        public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
 
             View result = null;
@@ -119,7 +138,7 @@ public class ChatFragment extends Fragment {
 
             result = inflater.inflate(R.layout.chat_row_outgoing, null);
 
-            TextView message = (TextView) result.findViewById(R.id.message_text);
+            TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position
 
             return result;
