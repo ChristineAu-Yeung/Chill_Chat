@@ -130,17 +130,24 @@ public class ChatFragment extends Fragment {
             return chatMessages.get(position).message;
         }
 
+        //Returns the message from chat at provided position
         public ChatMessage getChatMessage(int position) { return chatMessages.get(position); }
 
+        //Gets run for each message in the Array
         public View getView(int position, View convertView, ViewGroup parent) {
+            //Create inflater and set to current view
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View result = null;
 
+            //Open new DatabaseService and get the user ID
             DatabaseService db = new DatabaseService();
             String currentUser = db.getUID();
+            //Get the ChatMessage at provided position
             ChatMessage chatObject = getChatMessage(position);
             ImageView userPic;
 
+            //If the chat userID is equal to the ID of the current user, inflate with outgoing view
+            //Else, inflate the incoming view. Set userPic ImageView to correct id
             if (currentUser.equals(chatObject.userID)) {
                 result = inflater.inflate(R.layout.chat_row_outgoing, null);
                 userPic = result.findViewById(R.id.outUser);
@@ -149,8 +156,12 @@ public class ChatFragment extends Fragment {
                 userPic = result.findViewById(R.id.incUser);
             }
 
+            //Get the Image URL from the database and use the Picaasso plugin to set icon
+            //ToDo RYAN - Need to provide the chatObject.userID to function and return correct image and name
+            User user = db.getUserData(chatObject.userID);
             Uri userIcon = db.getImageUrl();
             if(userIcon != null) {
+
                 String url = userIcon.toString();
                 Picasso.get().load(url).into(userPic);
             } else {

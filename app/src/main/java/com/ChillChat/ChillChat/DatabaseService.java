@@ -22,11 +22,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
+    private static User user;
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -254,6 +256,45 @@ public class DatabaseService {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param userID - Pass the userID of any user [String]
+     * @return - Null if the user does not exist
+     * - [String] "Anonymous" if they're anon
+     * - [String] User's full display name if they do exist. Space delimited if there are
+     * middle and last names
+     */
+    public static User getUserData(String userID) {
+        DatabaseService db = new DatabaseService();
+
+        // Create a reference to the cities collection
+        CollectionReference userRef = db.userCollection;
+        DocumentReference docRef = userRef.document(userID);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map userData = document.getData();
+                        Collection data = userData.values();
+                        Log.d(TAG, "DocumentSnapshot data: " + data.toArray());
+                        //user = new User((String) data.toArray()[0],(String) data.toArray()[1],(String) data.toArray()[2],(String) data.toArray()[3]);
+                        user = new User("","","","");
+                    } else {
+                        Log.d(TAG, "No such document");
+                        user = new User("","","","");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                    user = new User("","","","");
+                }
+            }
+        });
+
+        return user;
     }
 
     /**
