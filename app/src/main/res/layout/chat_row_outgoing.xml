@@ -38,8 +38,7 @@
             android:layout_height="25dp"
             android:paddingTop="1dp"
             android:layout_weight="0"
-            android:gravity="right"
-            app:srcCompat="@android:drawable/sym_call_incoming" />
+            android:gravity="right" />
     </LinearLayout>
 
     <TextView
@@ -49,7 +48,6 @@
         android:layout_below="@id/linLayout"
         android:layout_alignParentRight="true"
         android:paddingRight="5dp"
-        android:text="Me"
         android:textSize="10sp" />
 
 </RelativeLayout>

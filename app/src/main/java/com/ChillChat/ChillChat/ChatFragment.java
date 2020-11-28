@@ -36,6 +36,7 @@ public class ChatFragment extends Fragment {
     EditText chatEditText;
     Button sendButton;
 
+    public static User messageUser;
     static ChatAdapter messageAdapter;
     public static ArrayList<ChatMessage> chatMessages;
 
@@ -147,27 +148,18 @@ public class ChatFragment extends Fragment {
             ImageView userPic;
 
             //If the chat userID is equal to the ID of the current user, inflate with outgoing view
-            //Else, inflate the incoming view. Set userPic ImageView to correct id
             if (currentUser.equals(chatObject.userID)) {
                 result = inflater.inflate(R.layout.chat_row_outgoing, null);
                 userPic = result.findViewById(R.id.outUser);
-            } else {
+            } else { //Else, inflate the incoming view. Set userPic ImageView to correct id
                 result = inflater.inflate(R.layout.chat_row_incoming, null);
                 userPic = result.findViewById(R.id.incUser);
             }
 
-            //Get the Image URL from the database and use the Picaasso plugin to set icon
-            //ToDo RYAN - Need to provide the chatObject.userID to function and return correct image and name
-            User user = db.getUserData(chatObject.userID);
-            Uri userIcon = db.getImageUrl();
-            if(userIcon != null) {
-
-                String url = userIcon.toString();
-                Picasso.get().load(url).into(userPic);
-            } else {
-                //Temp - S M O O T H B R A I N
-                Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
-            }
+//            //Get the Image URL from the database and use the Picaasso plugin to set icon
+//            db.getUserDataHelper(chatObject.userID);
+            //Try to do everything in this function
+            db.getUserData(chatObject.userID, result, userPic);
 
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position

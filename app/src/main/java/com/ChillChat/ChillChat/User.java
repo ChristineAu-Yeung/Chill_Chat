@@ -1,10 +1,11 @@
 package com.ChillChat.ChillChat;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class User {
-    String dateRegistered;
+    Date dateRegistered;
     String email;
     String firstName;
     String userID;
@@ -13,16 +14,15 @@ public class User {
     /**
      * Object that represents each user
      *
-     *
      */
-    public User(String sDateRegistered, String sEmail, String sFirstName, String sUserID) {
+    public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID) {
         dateRegistered = sDateRegistered;
         email = sEmail;
         firstName = sFirstName;
         userID = sUserID;
     }
 
-    public String getDateRegistered() {
+    public Date getDateRegistered() {
         return dateRegistered;
     }
 

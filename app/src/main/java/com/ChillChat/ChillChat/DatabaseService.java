@@ -1,7 +1,15 @@
 package com.ChillChat.ChillChat;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Xml;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -20,15 +29,32 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
+import org.xmlpull.v1.XmlPullParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
-    private static User user;
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -258,14 +284,12 @@ public class DatabaseService {
         }
     }
 
+
     /**
-     * @param userID - Pass the userID of any user [String]
-     * @return - Null if the user does not exist
-     * - [String] "Anonymous" if they're anon
-     * - [String] User's full display name if they do exist. Space delimited if there are
-     * middle and last names
+     * This function will set the information for a specific message about the provided user
+     * @return - void
      */
-    public static User getUserData(String userID) {
+    public static void getUserData(final String userID, final View result, final ImageView userPic) {
         DatabaseService db = new DatabaseService();
 
         // Create a reference to the cities collection
@@ -280,21 +304,39 @@ public class DatabaseService {
                     if (document.exists()) {
                         Map userData = document.getData();
                         Collection data = userData.values();
-                        Log.d(TAG, "DocumentSnapshot data: " + data.toArray());
-                        //user = new User((String) data.toArray()[0],(String) data.toArray()[1],(String) data.toArray()[2],(String) data.toArray()[3]);
-                        user = new User("","","","");
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Date dateObj = null;
+                        User user;
+                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
+                        //Check if the user is Anonymous and send default image
+                        if("Anonymous".equals(user.getFirstName())) {
+                            //Temp - S M O O T H B R A I N
+                            Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                        } else {
+                            //ToDo - Get the user image from the database once this is possible
+                            //Temp - B I G B R A I N
+                            Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(userPic);
+                        }
+                        //Set the user name under message
+                        TextView displayName = result.findViewById(R.id.user_name);
+                        displayName.setText(user.getFirstName());
                     } else {
                         Log.d(TAG, "No such document");
-                        user = new User("","","","");
+                        //Temp - S M O O T H B R A I N
+                        Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                        //Set the user name under message
+                        TextView displayName = result.findViewById(R.id.user_name);
+                        displayName.setText("Anonymous");
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
-                    user = new User("","","","");
+                    Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                    //Set the user name under message
+                    TextView displayName = result.findViewById(R.id.user_name);
+                    displayName.setText("Anonymous");
                 }
             }
         });
-
-        return user;
     }
 
     /**
