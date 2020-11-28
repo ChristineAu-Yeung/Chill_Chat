@@ -142,9 +142,12 @@ public class LoginActivity extends AppCompatActivity {
                     edit.commit();
                     Toast.makeText(LoginActivity.this, "Anonymous Login Complete.", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(LoginActivity.this, MenuActivity.class));
+
                 }
+
             }
         });
+
     }
 
     /**

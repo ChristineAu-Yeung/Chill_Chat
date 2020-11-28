@@ -20,6 +20,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +37,8 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
+
+
     // Make a blank age
     // Make a blank bio
     // Make a default profile pic
@@ -74,6 +78,7 @@ public class DatabaseService {
                 });
     }
 
+    //THIS FUNCTION IS NOT DONE
     void setGroupData(String id, String name) {
         Map<String, Object> group = new HashMap<>();
 
@@ -94,24 +99,25 @@ public class DatabaseService {
     }
 
     //Function to Delete User data from Database
-    void deleteUserData(String uid){
+    void deleteUserData(String uid) {
         userCollection.document(uid).delete();
         Log.i(TAG, "User Deleted");
     }
+
 
     /**
      * Deletes Anonymous Users data on Logout
      * No parameter required since currentUser is fetched and deleteUserData is called
      */
 
-     static void deleteAnonymousUser(){
+    static void deleteAnonymousUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseService db = new DatabaseService();
-        String userID = user.getUid();
 
-        if (user.isAnonymous()){
+        //Function that gets userID already
+        if (user.isAnonymous()) {
             user.delete();
-            db.deleteUserData(userID);
+            db.deleteUserData(getUID());
         }
     }
 
@@ -154,21 +160,69 @@ public class DatabaseService {
 
     /**
      * Update the current group's message array with the properties of the ChatMessage class.
-     *
+     ***UPDATED*** THIS IS SATHS OLD SHIT CODE BAHAHHAHAHA
      * @param message Instance of the ChatMessage class
      */
-    public void sendMessage(ChatMessage message) {
+//    public void sendMessage(ChatMessage message) {
+//        Map<String, Object> msg = new HashMap<>();
+//
+//        // More data can be added just by writing lines similar to the two below
+//
+//        msg.put("message", message.message);
+//        msg.put("sender", message.firstName);
+//        msg.put("msgId", message.messageID);
+//        msg.put("userID", message.userID);
+
+
+//        groupCollection
+//                .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
+//                .update("messages", FieldValue.arrayUnion(msg))
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.i(TAG, "Message sent");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Message not sent");
+//                    }
+//                });
+//
+//    }
+
+    /**
+     * This function fetches the content of message from ChatMessage and parse it to a HashMap
+     *
+     * message
+     * firstName
+     * messageID
+     * userID
+     *
+     * @param message
+     */
+    public Map<String, Object> getMessageContent(ChatMessage message){
+
         Map<String, Object> msg = new HashMap<>();
-
-        // More data can be added just by writing lines similar to the two below
-
         msg.put("message", message.message);
         msg.put("sender", message.firstName);
         msg.put("msgId", message.messageID);
         msg.put("userID", message.userID);
 
-        groupCollection
-                .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
+        return msg;
+    }
+
+    /**
+     * This function will perform the actual sending of the Messages
+     * Once the callback function has completed and fetched the document
+     *
+     * @param msg, documentUID
+     */
+    public static void sendMessage(Map<String, Object> msg, String documentUID) {
+        DatabaseService db = new DatabaseService();
+        db.groupCollection
+                .document(documentUID)
                 .update("messages", FieldValue.arrayUnion(msg))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -182,18 +236,54 @@ public class DatabaseService {
                         Log.w(TAG, "Message not sent");
                     }
                 });
+    }
+
+    /**
+     * This helper function will help the sendMessage function by first loading the
+     * documents and then calling sendMessage after retrieving the entire array
+     * This is done to avoid any aSynchronous issues
+     *
+     * @param message message The group from which we grab messages
+     */
+
+    public void sendMessageHelper(final ChatMessage message) {
+
+        final Map<String, Object> msgMap = getMessageContent(message);
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<String>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    sendMessage(msgMap, documentID.get(message.groupNumber));
+
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
 
     }
+
 
     /**
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
      *
-     * @param groupNumber The group from which we grab messages
+     * **UPDATE** The document is now fetched from the helper function getMessageHelper
+     * Due to an aSynchronous problem, the helper will fetch the groupDocument first
+     * to avoid a potential thread block
+     *
+     * @param groupDocumentString The group from which we grab messages
      */
-    public void getMessages(int groupNumber) {
-        groupCollection.document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
+    public void getMessages(String groupDocumentString) {
+        groupCollection.document(groupDocumentString)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
@@ -213,13 +303,13 @@ public class DatabaseService {
                                     ChatMessage incomingMessage = new ChatMessage(
                                             incomingMessages.get(i).get("message"),
                                             incomingMessages.get(i).get("sender"),
-                                            1,
+
+                                            0, //TODO this is hardcoded groupNumber
                                             incomingMessages.get(i).get("msgId"),
                                             incomingMessages.get(i).get("userID"));
 
                                     if (!ChatFragment.chatMessages.contains(incomingMessage)) {
                                         Log.d(TAG, "New message detected and being added to message array");
-//
                                         ChatFragment.chatMessages.add(incomingMessage);
                                         ChatFragment.externallyCallDatasetChanged();
                                     }
@@ -230,12 +320,40 @@ public class DatabaseService {
                                 Log.d(TAG, "Skipped new message query. Existing data is up to date.");
                             }
 
-
                         } else {
                             Log.d(TAG, "Current data: null");
                         }
                     }
                 });
+    }
+    /**
+     * Instead of the HARDCODED document, this helper function for gettingMessages will FETCH
+     * The specific document index of the Array and return
+     * The document corresponding to the groupNumber
+     *
+     * @param groupNumber Specifies which group to fetch
+     */
+    public void getMessageHelper(final int groupNumber) {
+
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<String>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    getMessages(documentID.get(groupNumber));
+
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
+
     }
 
 
@@ -317,6 +435,9 @@ public class DatabaseService {
      */
     public static String getUID() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         return user.getUid();
     }
+
+
 }
