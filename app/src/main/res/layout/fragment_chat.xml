@@ -31,8 +31,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll">
-    </ListView>
+        android:transcriptMode="alwaysScroll"></ListView>
 
 </RelativeLayout>

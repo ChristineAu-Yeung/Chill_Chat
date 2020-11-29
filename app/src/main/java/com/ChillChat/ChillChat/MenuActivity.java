@@ -1,5 +1,6 @@
 package com.ChillChat.ChillChat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,12 +8,16 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -26,6 +31,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 import static android.graphics.Color.parseColor;
 
@@ -41,7 +47,7 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        getWindow().setStatusBarColor(parseColor("#0080ff"));
+        getWindow().setStatusBarColor(parseColor("#3f77bc"));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawer = findViewById(R.id.drawer_layout);
@@ -68,8 +74,8 @@ public class MenuActivity extends AppCompatActivity {
                     //Edit the DefaultEmail to be text from email and commit changes
                     edit.putString("Email", "Void");
                     edit.commit();
-                    //RYAN - If anonymous user must delete from the database below
-
+                    //If anonymous user must delete from the database below
+                    deleteAnonymousUser();
                     //Set success to false then open activity
                     LoginActivity.success = false;
                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -88,8 +94,8 @@ public class MenuActivity extends AppCompatActivity {
         String userEmail = prefs.getString("Email", "Void");
         // Sets the user email in nav_header_main
         View headerView = navigationView.getHeaderView(0);
-        TextView navUsername = (TextView) headerView.findViewById(R.id.txtUserEmail);
-        navUsername.setText(userEmail);
+        TextView navUserEmail = (TextView) headerView.findViewById(R.id.txtUserEmail);
+        navUserEmail.setText(userEmail);
     }
 
     @Override
