@@ -122,30 +122,28 @@ public class DatabaseService {
                         DocumentSnapshot document = task.getResult();
 
                         if (document.exists()) {
-
                             Map profileData = document.getData();
                             Collection data = profileData.values();
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                             User user;
 
                             user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
-                            //Check if the user is Anonymous and send default image
 
                             EditText name = result.findViewById(R.id.nameEditText);
                             name.setText(user.getFirstName());
-                            
+
                             EditText register = result.findViewById(R.id.registeredEditText);
                             register.setText(user.getDateRegistered().toString());
 
-//                        if("Anonymous".equals(user.getFirstName())) {
-//                            //Temp - S M O O T H B R A I N
-//                            Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
-//                        } else {
-//                            //ToDo - Get the user image from the database once this is possible
-//                            //Temp - B I G B R A I N
-//                            Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(userPic);
-//                        }
-
+                            ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
+                            if("Anonymous".equals(user.getFirstName())) {
+                                //Temp - S M O O T H B R A I N
+                                Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(profilePic);
+                            } else {
+                                //ToDo - Get the user image from the database once this is possible
+                                //Temp - B I G B R A I N
+                                Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(profilePic);
+                            }
                     } else {
                             Log.d(TAG, "No such document");
                     }
@@ -470,13 +468,7 @@ public class DatabaseService {
                         Map userData = document.getData();
                         Collection data = userData.values();
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        Date dateObj = null;
                         User user;
-
-                        //ERROR
-//                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
-
-
 
                         user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
                         //Check if the user is Anonymous and send default image
