@@ -43,7 +43,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        getWindow().setStatusBarColor(parseColor("#0080ff"));
+        getWindow().setStatusBarColor(parseColor("#3f77bc"));
         //Firebase Authorization
         mAuth = FirebaseAuth.getInstance();
         //Get screen elements
