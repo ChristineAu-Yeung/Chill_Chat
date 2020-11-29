@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         //Basic operations
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        getWindow().setStatusBarColor(parseColor("#0080ff"));
+        getWindow().setStatusBarColor(parseColor("#3f77bc"));
         //Firebase
         mAuth = FirebaseAuth.getInstance();
     }
