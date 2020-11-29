@@ -5,10 +5,10 @@ import java.util.Date;
 import java.util.Objects;
 
 public class User {
-    Date dateRegistered;
-    String email;
-    String firstName;
-    String userID;
+    private Date dateRegistered;
+    private String email;
+    private String firstName;
+    private String userID;
 //        String imageUrl; // For the future
 
     /**
@@ -16,6 +16,14 @@ public class User {
      *
      */
     public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID) {
+        dateRegistered = sDateRegistered;
+        email = sEmail;
+        firstName = sFirstName;
+        userID = sUserID;
+    }
+
+
+    public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID, String imageUrl) {
         dateRegistered = sDateRegistered;
         email = sEmail;
         firstName = sFirstName;

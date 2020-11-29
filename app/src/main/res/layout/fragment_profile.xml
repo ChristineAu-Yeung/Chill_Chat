@@ -143,6 +143,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:hint="@string/registeredDate"
+            android:inputType="date"
             app:layout_constraintStart_toEndOf="@+id/registeredLabelTextView"
             app:layout_constraintTop_toTopOf="parent" />
 
