@@ -36,7 +36,7 @@ public class ChatFragment extends Fragment {
     EditText chatEditText;
     Button sendButton;
 
-    public static User messageUser;
+
     static ChatAdapter messageAdapter;
     public static ArrayList<ChatMessage> chatMessages;
 
@@ -49,7 +49,6 @@ public class ChatFragment extends Fragment {
         //Group number is hardCoded in.
         //TODO we have to figure a way to assign groupNumbers to users
         db.getMessageHelper(0);
-
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -57,6 +56,7 @@ public class ChatFragment extends Fragment {
         chatMessages = new ArrayList<>();
         messageAdapter = new ChatAdapter(this.getActivity());
         chatListView.setAdapter(messageAdapter);
+
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -323,7 +323,7 @@ public class DatabaseService {
 
                             if (incomingMessages != null) {
 
-                                for (int i = 0; i < incomingMessages.size() - 1; i++) {
+                                for (int i = 0; i < incomingMessages.size(); i++) {
 
                                     ChatMessage incomingMessage = new ChatMessage(
                                             incomingMessages.get(i).get("message"),
@@ -425,6 +425,7 @@ public class DatabaseService {
 
                         //ERROR
 //                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
+
 
 
                         user = new User(dateObj, "", (String) data.toArray()[0], userID);
