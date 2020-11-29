@@ -8,11 +8,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -42,12 +45,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -63,13 +68,12 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
-
-
     // Make a blank age
     // Make a blank bio
     // Make a default profile pic
 
     /**
+     * Helper Function, this is a helper method that should stay private to this class
      * This function uses the .set() function to create user documents for the database.
      * This is where we store extra user data after they created after successful registration.
      * Basic information can be access with FirebaseAuth.getInstance().getUser . . .getEmail(), etc.
@@ -78,12 +82,10 @@ public class DatabaseService {
      * @param email     Email address of the user (for testing)
      * @param firstName First name of the user (to add to the user record)
      */
-    void setUserData(String uid, String email, String firstName) {
+    private void setUserData(String uid, String email, String firstName) {
         // Create a user object for the document and add data to it.
         // This can be expanded in the future
         Map<String, Object> user = new HashMap<>();
-
-
         user.put("email", email);
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
@@ -104,7 +106,57 @@ public class DatabaseService {
                 });
     }
 
-    //THIS FUNCTION IS NOT DONE
+    public void getProfileData(final String userID, final FragmentActivity result) {
+            DatabaseService db = new DatabaseService();
+
+            // Create a reference to the cities collection
+            CollectionReference userRef = db.userCollection;
+            DocumentReference reference = userRef.document(userID);
+
+            reference.get().
+                    addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document.exists()) {
+
+                            Map profileData = document.getData();
+                            Collection data = profileData.values();
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            User user;
+
+                            user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
+                            //Check if the user is Anonymous and send default image
+
+                            EditText name = result.findViewById(R.id.nameEditText);
+                            name.setText(user.getFirstName());
+                            
+                            EditText register = result.findViewById(R.id.registeredEditText);
+                            register.setText(user.getDateRegistered().toString());
+
+//                        if("Anonymous".equals(user.getFirstName())) {
+//                            //Temp - S M O O T H B R A I N
+//                            Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+//                        } else {
+//                            //ToDo - Get the user image from the database once this is possible
+//                            //Temp - B I G B R A I N
+//                            Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(userPic);
+//                        }
+
+                    } else {
+                            Log.d(TAG, "No such document");
+                    }
+                } else {
+                        Log.w(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+
     void setGroupData(String id, String name) {
         Map<String, Object> group = new HashMap<>();
 
@@ -149,18 +201,16 @@ public class DatabaseService {
 
     /**
      * Update the user's document as well as profile data
-     * This function should stay private to this class
      *
      * @param firstName User's first name
      * @param email     User's email address
      */
     static void updateUserData(String email, String firstName) {
-        // Create user document
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseService db = new DatabaseService();
 
         if (user != null) {
-            db.setUserData(user.getUid(), email, firstName);
+            db.setUserData(getUID(), email, firstName);
 
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(firstName)
@@ -428,7 +478,7 @@ public class DatabaseService {
 
 
 
-                        user = new User(dateObj, "", (String) data.toArray()[0], userID);
+                        user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
                         //Check if the user is Anonymous and send default image
 
                         if("Anonymous".equals(user.getFirstName())) {
