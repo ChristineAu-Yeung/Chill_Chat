@@ -52,8 +52,6 @@ public class DatabaseService {
         // Create a user object for the document and add data to it.
         // This can be expanded in the future
         Map<String, Object> user = new HashMap<>();
-
-
         user.put("email", email);
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
