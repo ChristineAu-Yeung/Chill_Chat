@@ -293,7 +293,6 @@ public class DatabaseService {
                 }
             }
         });
-
     }
 
 
@@ -379,7 +378,6 @@ public class DatabaseService {
                 }
             }
         });
-
     }
 
 
@@ -424,8 +422,14 @@ public class DatabaseService {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Date dateObj = null;
                         User user;
-                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
+
+                        //ERROR
+//                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
+
+
+                        user = new User(dateObj, "", (String) data.toArray()[0], userID);
                         //Check if the user is Anonymous and send default image
+
                         if("Anonymous".equals(user.getFirstName())) {
                             //Temp - S M O O T H B R A I N
                             Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
