@@ -89,6 +89,8 @@ public class DatabaseService {
         user.put("email", email);
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
+        user.put("age", 0);
+        user.put("biography", "");
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
