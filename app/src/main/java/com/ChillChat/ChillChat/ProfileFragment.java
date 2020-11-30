@@ -42,9 +42,6 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
     private Button editButton;
     private EditText name;
-    private EditText age;
-    private EditText bio;
-    private TextView joinDate;
     ImageButton profileImageButton;
     Uri imageUri;
     private final static int REQUEST_GALLERY = 10;
@@ -57,19 +54,15 @@ public class ProfileFragment extends Fragment {
         userData = new ArrayList<>();
         editButton = (Button) root.findViewById(R.id.editButton);
         name = (EditText) root.findViewById(R.id.nameEditText);
-        age = (EditText) root.findViewById(R.id.ageEditText);
-        bio = (EditText) root.findViewById(R.id.bioEditText);
-        joinDate = (TextView) root.findViewById(R.id.registeredLabelTextView);
 
-
-        PullProfile();
+        GetProfile();
 
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "updated user collection");
-                SetProfile("brian@test.com", name.getText().toString());
+                SetProfile(name.getText().toString());
             }
         });
 
@@ -102,12 +95,9 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void SetProfile(String email, String name){
-        db.updateUserData(email, name);
-    }
+    private void SetProfile(String name){  }
 
-
-    private void PullProfile(){
+    private void GetProfile(){
         db.getProfileData(db.getUID(), getActivity());
     }
 }

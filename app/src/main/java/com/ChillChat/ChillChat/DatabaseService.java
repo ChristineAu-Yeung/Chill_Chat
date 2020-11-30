@@ -122,19 +122,27 @@ public class DatabaseService {
                         DocumentSnapshot document = task.getResult();
 
                         if (document.exists()) {
+
                             Map profileData = document.getData();
                             Collection data = profileData.values();
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                             User user;
 
-                            user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
+                            user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID,
+                                    (long) document.get("age"), (String) document.get("biography"));
+                            //Check if the user is Anonymous and send default image
 
                             EditText name = result.findViewById(R.id.nameEditText);
-                            name.setText(user.getFirstName());
-
                             EditText register = result.findViewById(R.id.registeredEditText);
-                            register.setText(user.getDateRegistered().toString());
+                            EditText age = result.findViewById(R.id.ageEditText);
+                            EditText bio = result.findViewById(R.id.bioEditText);
 
+                            name.setText(user.getFirstName());
+                            register.setText(user.getDateRegistered().toString());
+                            age.setText(String.valueOf(user.getAge()));
+                            bio.setText(user.getBio());
+
+                            //User's Profile Picture
                             ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
                             if("Anonymous".equals(user.getFirstName())) {
                                 //Temp - S M O O T H B R A I N
@@ -144,6 +152,7 @@ public class DatabaseService {
                                 //Temp - B I G B R A I N
                                 Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(profilePic);
                             }
+
                     } else {
                             Log.d(TAG, "No such document");
                     }
@@ -153,6 +162,10 @@ public class DatabaseService {
             }
         });
 
+    }
+
+    public void SetProfileData(String firstName) {
+        
     }
 
     void setGroupData(String id, String name) {
