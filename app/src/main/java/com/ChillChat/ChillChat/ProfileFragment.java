@@ -38,11 +38,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class ProfileFragment extends Fragment {
 
     protected DatabaseService db = new DatabaseService();
-    public static ArrayList<String> userData;
     private static final String TAG = "ProfileFragment";
     private Button editButton;
+    private ImageButton profileImageButton;
     private EditText name;
-    ImageButton profileImageButton;
+    private EditText age;
+    private EditText bio;
     Uri imageUri;
     private final static int REQUEST_GALLERY = 10;
 
@@ -51,23 +52,26 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        userData = new ArrayList<>();
         editButton = (Button) root.findViewById(R.id.editButton);
+        profileImageButton = (ImageButton) root.findViewById(R.id.profilePictureImageButton);
         name = (EditText) root.findViewById(R.id.nameEditText);
+        age = (EditText) root.findViewById(R.id.ageEditText);
+        bio = (EditText) root.findViewById(R.id.bioEditText);
 
+        //pulls profile data
         GetProfile();
-
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "updated user collection");
-                SetProfile(name.getText().toString());
+                String ageString = age.getText().toString();
+                long ageNum = Long.parseLong(ageString);
+                SetProfile(name.getText().toString(), ageNum, bio.getText().toString());
             }
         });
 
         // Image Button to Open Gallery to choose Profile Picture
-        profileImageButton = (ImageButton) root.findViewById(R.id.profilePictureImageButton);
         profileImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +99,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void SetProfile(String name){  }
+    private void SetProfile(String name, long age, String bio){ db.setProfileData(name, age, bio); }
 
     private void GetProfile(){
         db.getProfileData(db.getUID(), getActivity());

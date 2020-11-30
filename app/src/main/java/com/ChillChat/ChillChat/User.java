@@ -25,11 +25,9 @@ public class User {
         userID = sUserID;
     }
 
-    public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID, long sAge, String sBio) {
+    public User(Date sDateRegistered, String sFirstName, long sAge, String sBio) {
         dateRegistered = sDateRegistered;
-        email = sEmail;
         firstName = sFirstName;
-        userID = sUserID;
         age = sAge;
         bio = sBio;
     }

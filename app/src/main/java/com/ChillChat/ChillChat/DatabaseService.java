@@ -128,8 +128,7 @@ public class DatabaseService {
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                             User user;
 
-                            user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID,
-                                    (long) document.get("age"), (String) document.get("biography"));
+                            user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"), (long) document.get("age"), (String) document.get("biography"));
                             //Check if the user is Anonymous and send default image
 
                             EditText name = result.findViewById(R.id.nameEditText);
@@ -164,8 +163,27 @@ public class DatabaseService {
 
     }
 
-    public void SetProfileData(String firstName) {
-        
+    public void setProfileData(String firstName, long age, String biography) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("firstName", firstName);
+        user.put("dateRegistered", FieldValue.serverTimestamp());
+        user.put("age", age);
+        user.put("biography", biography);
+
+        // Add the user to the User Collection
+        userCollection.document(getUID()).update(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "User's profile has been set!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing to user's profile", e);
+                    }
+                });
     }
 
     void setGroupData(String id, String name) {
