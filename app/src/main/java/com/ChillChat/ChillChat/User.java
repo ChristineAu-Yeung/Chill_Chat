@@ -9,6 +9,9 @@ public class User {
     private String email;
     private String firstName;
     private String userID;
+    private long age;
+    private String bio;
+
 //        String imageUrl; // For the future
 
     /**
@@ -22,13 +25,13 @@ public class User {
         userID = sUserID;
     }
 
-
-    public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID, String imageUrl) {
+    public User(Date sDateRegistered, String sFirstName, long sAge, String sBio) {
         dateRegistered = sDateRegistered;
-        email = sEmail;
         firstName = sFirstName;
-        userID = sUserID;
+        age = sAge;
+        bio = sBio;
     }
+
 
     public Date getDateRegistered() {
         return dateRegistered;
@@ -45,4 +48,8 @@ public class User {
     public String getUserID(){
         return userID;
     }
+
+    public String getBio() { return bio;}
+
+    public long getAge() { return age;}
 }

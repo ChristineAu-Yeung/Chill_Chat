@@ -60,6 +60,9 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
+    //Temp Images for user and anonymous
+    private static final String DefaultImage = "https://static.thenounproject.com/png/3246632-200.png";
+    private static final String TempImage = "https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png";
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -89,6 +92,8 @@ public class DatabaseService {
         user.put("email", email);
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
+        user.put("age", 0);
+        user.put("biography", "");
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
@@ -128,23 +133,28 @@ public class DatabaseService {
                             Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                             User user;
 
-                            user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
+                            user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"), (long) document.get("age"), (String) document.get("biography"));
                             //Check if the user is Anonymous and send default image
 
                             EditText name = result.findViewById(R.id.nameEditText);
-                            name.setText(user.getFirstName());
-                            
                             EditText register = result.findViewById(R.id.registeredEditText);
-                            register.setText(user.getDateRegistered().toString());
+                            EditText age = result.findViewById(R.id.ageEditText);
+                            EditText bio = result.findViewById(R.id.bioEditText);
 
-//                        if("Anonymous".equals(user.getFirstName())) {
-//                            //Temp - S M O O T H B R A I N
-//                            Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
-//                        } else {
-//                            //ToDo - Get the user image from the database once this is possible
-//                            //Temp - B I G B R A I N
-//                            Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(userPic);
-//                        }
+                            name.setText(user.getFirstName());
+                            register.setText(user.getDateRegistered().toString());
+                            age.setText(String.valueOf(user.getAge()));
+                            bio.setText(user.getBio());
+
+                            //User's Profile Picture
+                            ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
+                            if("Anonymous".equals(user.getFirstName())) {
+                                Picasso.get().load(DefaultImage).into(profilePic);
+                            } else {
+                                //ToDo - Get the user image from the database once this is possible
+                                //Temp - Until we can get the real user image from userTable
+                                Picasso.get().load(TempImage).into(profilePic);
+                            }
 
                     } else {
                             Log.d(TAG, "No such document");
@@ -155,6 +165,29 @@ public class DatabaseService {
             }
         });
 
+    }
+
+    public void setProfileData(String firstName, long age, String biography) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("firstName", firstName);
+        user.put("dateRegistered", FieldValue.serverTimestamp());
+        user.put("age", age);
+        user.put("biography", biography);
+
+        // Add the user to the User Collection
+        userCollection.document(getUID()).update(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "User's profile has been set!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing to user's profile", e);
+                    }
+                });
     }
 
     void setGroupData(String id, String name) {
@@ -187,7 +220,6 @@ public class DatabaseService {
      * Deletes Anonymous Users data on Logout
      * No parameter required since currentUser is fetched and deleteUserData is called
      */
-
     static void deleteAnonymousUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseService db = new DatabaseService();
@@ -230,43 +262,9 @@ public class DatabaseService {
                         }
                     });
         } else {
-            Log.w(TAG, "fuck. the user is nullllllllllllllllllll");
+            Log.w(TAG, "The user is null");
         }
     }
-
-    /**
-     * Update the current group's message array with the properties of the ChatMessage class.
-     ***UPDATED*** THIS IS SATHS OLD SHIT CODE BAHAHHAHAHA
-     * @param message Instance of the ChatMessage class
-     */
-//    public void sendMessage(ChatMessage message) {
-//        Map<String, Object> msg = new HashMap<>();
-//
-//        // More data can be added just by writing lines similar to the two below
-//
-//        msg.put("message", message.message);
-//        msg.put("sender", message.firstName);
-//        msg.put("msgId", message.messageID);
-//        msg.put("userID", message.userID);
-
-
-//        groupCollection
-//                .document("Rd9DOKVw33lCtfzSnvjV") // TODO Update this so the document path is equal to the group number
-//                .update("messages", FieldValue.arrayUnion(msg))
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.i(TAG, "Message sent");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Message not sent");
-//                    }
-//                });
-//
-//    }
 
     /**
      * This function fetches the content of message from ChatMessage and parse it to a HashMap
@@ -321,7 +319,6 @@ public class DatabaseService {
      *
      * @param message message The group from which we grab messages
      */
-
     public void sendMessageHelper(final ChatMessage message) {
 
         final Map<String, Object> msgMap = getMessageContent(message);
@@ -344,7 +341,6 @@ public class DatabaseService {
             }
         });
     }
-
 
     /**
      * Gets all the messages for the corresponding group (see param) and update the list of messages
@@ -401,6 +397,7 @@ public class DatabaseService {
                     }
                 });
     }
+
     /**
      * Instead of the HARDCODED document, this helper function for gettingMessages will FETCH
      * The specific document index of the Array and return
@@ -470,39 +467,30 @@ public class DatabaseService {
                         Map userData = document.getData();
                         Collection data = userData.values();
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        Date dateObj = null;
                         User user;
-
-                        //ERROR
-//                        user = new User(dateObj,(String) data.toArray()[1],(String) data.toArray()[0],userID);
-
-
-
                         user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
-                        //Check if the user is Anonymous and send default image
 
+                        //Check if the user is Anonymous and send default image
                         if("Anonymous".equals(user.getFirstName())) {
-                            //Temp - S M O O T H B R A I N
-                            Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                            Picasso.get().load(DefaultImage).into(userPic);
                         } else {
                             //ToDo - Get the user image from the database once this is possible
-                            //Temp - B I G B R A I N
-                            Picasso.get().load("https://cdn.the-scientist.com/assets/articleNo/36663/iImg/15248/d305ec2a-9f5a-4894-8cd3-a7c43bb0756b-brain-640.jpg").into(userPic);
+                            //Temp - Until userImage is added to UserTable
+                            Picasso.get().load(TempImage).into(userPic);
                         }
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
                         displayName.setText(user.getFirstName());
                     } else {
                         Log.d(TAG, "No such document");
-                        //Temp - S M O O T H B R A I N
-                        Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                        Picasso.get().load(DefaultImage).into(userPic);
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
                         displayName.setText("Anonymous");
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
-                    Picasso.get().load("https://i.redd.it/95pfytrlsl241.jpg").into(userPic);
+                    Picasso.get().load(DefaultImage).into(userPic);
                     //Set the user name under message
                     TextView displayName = result.findViewById(R.id.user_name);
                     displayName.setText("Anonymous");
@@ -520,7 +508,7 @@ public class DatabaseService {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null && user.isAnonymous()) {
-            return Uri.parse("https://i.redd.it/95pfytrlsl241.jpg"); // S M O O T H B R A I N
+            return Uri.parse(DefaultImage);
         } else if (user != null) {
             return user.getPhotoUrl();
         } else {
@@ -559,7 +547,7 @@ public class DatabaseService {
                         }
                     });
         } else {
-            Log.w(TAG, "fuck. the user is nullllllllllllllllllll");
+            Log.w(TAG, "The user is null");
         }
     }
 

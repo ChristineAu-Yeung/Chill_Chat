@@ -1,14 +1,20 @@
 package com.ChillChat.ChillChat;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -68,19 +75,32 @@ public class MenuActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 //Gets triggered on nav_logout
                 if(id==R.id.nav_logout) {
-                    //Open shared preference from file location and open editor
-                    SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                    SharedPreferences.Editor edit = prefs.edit();
-                    //Edit the DefaultEmail to be text from email and commit changes
-                    edit.putString("Email", "Void");
-                    edit.commit();
-                    //If anonymous user must delete from the database below
-                    deleteAnonymousUser();
-                    //Set success to false then open activity
-                    LoginActivity.success = false;
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
-                    finish();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                    builder.setMessage("Are you sure you want to log out?")
+                            .setTitle("Attention")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //Open shared preference from file location and open editor
+                                    SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                                    SharedPreferences.Editor edit = prefs.edit();
+                                    //Edit the DefaultEmail to be text from email and commit changes
+                                    edit.putString("Email", "Void");
+                                    edit.commit();
+                                    //If anonymous user must delete from the database below
+                                    deleteAnonymousUser();
+                                    //Set success to false then open activity
+                                    LoginActivity.success = false;
+                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                }
+                            })
+                            .show();
                 }
                 //This is for maintaining the behavior of the Navigation view
                 NavigationUI.onNavDestinationSelected(item, navController);
@@ -96,6 +116,24 @@ public class MenuActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         TextView navUserEmail = (TextView) headerView.findViewById(R.id.txtUserEmail);
         navUserEmail.setText(userEmail);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu m) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.activity_main_button, m);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_one:
+                Log.i("Test", "MADE IT HERE");
+                //Todo - Here add functionality that will allow to change group
+                return true;
+        }
+        return false;
     }
 
     @Override
