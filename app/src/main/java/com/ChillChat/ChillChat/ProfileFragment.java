@@ -7,10 +7,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -44,11 +48,11 @@ public class ProfileFragment extends Fragment {
     private EditText name;
     private EditText age;
     private EditText bio;
-    Uri imageUri;
     private final static int REQUEST_GALLERY = 10;
 
-    //PLEASE REFER TO ChatFragment TO SEE HOW THINGS NEED TO BE ALTERED FOR A FRAGMENT TYPE ACTIVITY!!! - Ryan
-
+    /**
+     * Gets fired when the fragment is first created
+     */
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -64,10 +68,18 @@ public class ProfileFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Sets the profileImage Bitmap to allow for profile updates without image swap.
+                //Todo - Need to fix the recycle bitmap issue
+                Bitmap pImage = null;
+                BitmapDrawable drawable = (BitmapDrawable) profileImageButton.getDrawable();
+                pImage = drawable.getBitmap();
+                //Continue normal process
                 Log.i(TAG, "updated user collection");
                 String ageString = age.getText().toString();
                 long ageNum = Long.parseLong(ageString);
-                SetProfile(name.getText().toString(), ageNum, bio.getText().toString());
+                String imageB64 = getImageData(pImage);
+                SetProfile(name.getText().toString(), ageNum, bio.getText().toString(), imageB64);
+                Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -83,25 +95,49 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Gets fired after the user has selected an image
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         profileImageButton = (ImageButton) getView().findViewById(R.id.profilePictureImageButton);
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            Bitmap bitmap = null;
+            Bitmap profileImage = null;
             try {
                 Uri imageUri = data.getData();
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),imageUri);
-                profileImageButton.setImageBitmap(bitmap);
+                profileImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),imageUri);
+                profileImageButton.setImageBitmap(profileImage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void SetProfile(String name, long age, String bio){ db.setProfileData(name, age, bio); }
+    /**
+     * This function sets the profile data from the cloud firestore.
+     */
+    private void SetProfile(String name, long age, String bio, String pImage){
+        db.setProfileData(name, age, bio, pImage);
+    }
 
+    /**
+     * This function gets the profile data from the cloud firestore.
+     * The function has to set the view data inside to prevent async issues
+     */
     private void GetProfile(){
         db.getProfileData(db.getUID(), getActivity());
+    }
+
+    /**
+     * This function takes in a Bitmap image and returns a string of Byte64 to be stored in the database.
+     */
+    public String getImageData(Bitmap bmp) {
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
+        bmp.recycle();
+        byte[] byteArray = bao.toByteArray();
+        String imageB64 = Base64.encodeToString(byteArray, Base64.URL_SAFE);
+        return imageB64;
     }
 }

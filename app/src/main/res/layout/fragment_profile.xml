@@ -23,6 +23,7 @@
         android:layout_width="187dp"
         android:layout_height="156dp"
         android:layout_marginTop="16dp"
+        android:background="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +94,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:hint="@string/age_hint"
+            android:inputType="number"
             app:layout_constraintStart_toEndOf="@+id/ageLabelTextView"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -142,6 +144,7 @@
             android:layout_height="45dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
+            android:enabled="false"
             android:hint="@string/registeredDate"
             android:inputType="date"
             app:layout_constraintStart_toEndOf="@+id/registeredLabelTextView"
