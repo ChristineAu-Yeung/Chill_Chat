@@ -30,6 +30,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Document;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.File;
@@ -89,7 +90,7 @@ public class DatabaseService {
         user.put("age", 0);
         user.put("biography", "");
         user.put("profileImage","");
-
+        user.put("groupNumber", 0);
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -104,6 +105,39 @@ public class DatabaseService {
                         Log.w(TAG, "Error writing document", e);
                     }
                 });
+    }
+
+    public static void groupNumberSnapshot(){
+        final DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<String>();
+        final String groupValue;
+        CollectionReference userRef = db.userCollection;
+        DocumentReference reference = userRef.document(getUID());
+  
+        reference.get().
+                addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            DocumentSnapshot document = task.getResult();
+                            if(document.exists()){
+                                documentID.add((String) document.get("groupNumber"));
+                                User user = new User((int) document.get("groupNumber"));
+                                String bob = documentID.get(1);
+                                user.setGroupNum(Integer.parseInt(bob));
+                                Log.i(TAG, "POPO" + bob);
+                            }
+
+                        }
+                    }
+                });
+    }
+    public int setGroupnumber(int documentCount){
+        int groupNumber;
+
+
+        return documentCount;
     }
 
     public void getProfileData(final String userID, final FragmentActivity result) {
@@ -348,7 +382,8 @@ public class DatabaseService {
      *
      * @param groupDocumentString The group from which we grab messages
      */
-    public void getMessages(String groupDocumentString) {
+    public void getMessages(String groupDocumentString, final int groupNumber) {
+
         groupCollection.document(groupDocumentString)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -370,7 +405,7 @@ public class DatabaseService {
                                             incomingMessages.get(i).get("message"),
                                             incomingMessages.get(i).get("sender"),
 
-                                            0, //TODO this is hardcoded groupNumber
+                                            groupNumber, //TODO this is hardcoded groupNumber
                                             incomingMessages.get(i).get("msgId"),
                                             incomingMessages.get(i).get("userID"));
 
@@ -413,7 +448,7 @@ public class DatabaseService {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         documentID.add(document.getId());
                     }
-                    getMessages(documentID.get(groupNumber));
+                    getMessages(documentID.get(groupNumber), groupNumber);
 
                 } else {
                     Log.i(TAG, "Unsuccessful");
@@ -422,6 +457,27 @@ public class DatabaseService {
         });
     }
 
+    public void fetchDocuments() {
+
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<String>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    setGroupnumber(documentID.size());
+
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
+    }
 
     /**
      * @return - Null if the user does not exist

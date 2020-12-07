@@ -41,6 +41,7 @@ import androidx.appcompat.widget.Toolbar;
 import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 import static android.graphics.Color.parseColor;
+import static com.ChillChat.ChillChat.DatabaseService.groupNumberSnapshot;
 
 public class MenuActivity extends AppCompatActivity {
     //Variable for SharedPreference
@@ -130,6 +131,7 @@ public class MenuActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_one:
                 Log.i("Test", "MADE IT HERE");
+                groupNumberSnapshot();
                 //Todo - Here add functionality that will allow to change group
                 return true;
         }

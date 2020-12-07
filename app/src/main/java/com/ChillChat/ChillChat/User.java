@@ -16,6 +16,7 @@ public class User {
     private long age;
     private String bio;
     private String profileImage;
+    private int groupNum;
 
     /**
      * Object that represents each user
@@ -35,7 +36,14 @@ public class User {
         bio = sBio;
         profileImage = pImage;
     }
+    public User(int groupNumber){
+        groupNum = groupNumber;
+    }
+    public int getGroupNum(){return groupNum;}
 
+    public void setGroupNum(int newGroup){
+        this.groupNum = newGroup;
+    }
     public Date getDateRegistered() {
         return dateRegistered;
     }
