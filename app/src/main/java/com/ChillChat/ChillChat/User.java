@@ -1,5 +1,9 @@
 package com.ChillChat.ChillChat;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -11,8 +15,7 @@ public class User {
     private String userID;
     private long age;
     private String bio;
-
-//        String imageUrl; // For the future
+    private String profileImage;
 
     /**
      * Object that represents each user
@@ -25,13 +28,13 @@ public class User {
         userID = sUserID;
     }
 
-    public User(Date sDateRegistered, String sFirstName, long sAge, String sBio) {
+    public User(Date sDateRegistered, String sFirstName, long sAge, String sBio, String pImage) {
         dateRegistered = sDateRegistered;
         firstName = sFirstName;
         age = sAge;
         bio = sBio;
+        profileImage = pImage;
     }
-
 
     public Date getDateRegistered() {
         return dateRegistered;
@@ -52,4 +55,11 @@ public class User {
     public String getBio() { return bio;}
 
     public long getAge() { return age;}
+
+    public Bitmap getProfileImage() {
+        //Converts the imageB64 String back into Bitmap
+        byte[] decodedString = Base64.decode(profileImage, Base64.URL_SAFE);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
 }

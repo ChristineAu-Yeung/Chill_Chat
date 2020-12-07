@@ -1,12 +1,8 @@
 package com.ChillChat.ChillChat;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.util.Xml;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,13 +16,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -61,8 +55,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
     //Temp Images for user and anonymous
-    private static final String DefaultImage = "https://static.thenounproject.com/png/3246632-200.png";
-    private static final String TempImage = "https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png";
+    private static final String defaultImage = "https://static.thenounproject.com/png/3246632-200.png";
+    private static final String userImage = "https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png";
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -94,6 +88,7 @@ public class DatabaseService {
         user.put("dateRegistered", FieldValue.serverTimestamp());
         user.put("age", 0);
         user.put("biography", "");
+        user.put("profileImage","");
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
@@ -127,14 +122,10 @@ public class DatabaseService {
                         DocumentSnapshot document = task.getResult();
 
                         if (document.exists()) {
-
                             Map profileData = document.getData();
                             Collection data = profileData.values();
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            User user;
-
-                            user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"), (long) document.get("age"), (String) document.get("biography"));
-                            //Check if the user is Anonymous and send default image
+                            User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
+                                            (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
                             EditText name = result.findViewById(R.id.nameEditText);
                             EditText register = result.findViewById(R.id.registeredEditText);
@@ -149,11 +140,14 @@ public class DatabaseService {
                             //User's Profile Picture
                             ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
                             if("Anonymous".equals(user.getFirstName())) {
-                                Picasso.get().load(DefaultImage).into(profilePic);
+                                Picasso.get().load(defaultImage).into(profilePic);
                             } else {
-                                //ToDo - Get the user image from the database once this is possible
-                                //Temp - Until we can get the real user image from userTable
-                                Picasso.get().load(TempImage).into(profilePic);
+                                Bitmap bmpImage = user.getProfileImage();
+                                if(bmpImage != null) {
+                                    profilePic.setImageBitmap(bmpImage);
+                                } else {
+                                    Picasso.get().load(userImage).into(profilePic);
+                                }
                             }
 
                     } else {
@@ -167,12 +161,13 @@ public class DatabaseService {
 
     }
 
-    public void setProfileData(String firstName, long age, String biography) {
+    public void setProfileData(String firstName, long age, String biography, String profileImage) {
         Map<String, Object> user = new HashMap<>();
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
         user.put("age", age);
         user.put("biography", biography);
+        user.put("profileImage", profileImage);
 
         // Add the user to the User Collection
         userCollection.document(getUID()).update(user)
@@ -466,31 +461,30 @@ public class DatabaseService {
                     if (document.exists()) {
                         Map userData = document.getData();
                         Collection data = userData.values();
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         User user;
                         user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
 
                         //Check if the user is Anonymous and send default image
                         if("Anonymous".equals(user.getFirstName())) {
-                            Picasso.get().load(DefaultImage).into(userPic);
+                            Picasso.get().load(defaultImage).into(userPic);
                         } else {
                             //ToDo - Get the user image from the database once this is possible
                             //Temp - Until userImage is added to UserTable
-                            Picasso.get().load(TempImage).into(userPic);
+                            Picasso.get().load(userImage).into(userPic);
                         }
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
                         displayName.setText(user.getFirstName());
                     } else {
                         Log.d(TAG, "No such document");
-                        Picasso.get().load(DefaultImage).into(userPic);
+                        Picasso.get().load(defaultImage).into(userPic);
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
                         displayName.setText("Anonymous");
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
-                    Picasso.get().load(DefaultImage).into(userPic);
+                    Picasso.get().load(defaultImage).into(userPic);
                     //Set the user name under message
                     TextView displayName = result.findViewById(R.id.user_name);
                     displayName.setText("Anonymous");
@@ -508,7 +502,7 @@ public class DatabaseService {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null && user.isAnonymous()) {
-            return Uri.parse(DefaultImage);
+            return Uri.parse(defaultImage);
         } else if (user != null) {
             return user.getPhotoUrl();
         } else {

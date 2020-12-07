@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
         String sPassword = txtPassword.getText().toString();
         //Check to see if the email and password is not null
         if (sEmail.equalsIgnoreCase("") || sPassword.equalsIgnoreCase("") || !isValid(sEmail)) {
-            Toast.makeText(LoginActivity.this, "Enter a valid Username and/or password.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Enter a valid username and/or password.", Toast.LENGTH_SHORT).show();
         } else {
             //Attempt to sign in
             signIn(sEmail, sPassword);
