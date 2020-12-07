@@ -1,5 +1,7 @@
 package com.ChillChat.ChillChat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
@@ -30,27 +32,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
-import javax.net.ssl.HttpsURLConnection;
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
@@ -60,6 +48,9 @@ public class DatabaseService {
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // Shared prefs file name
+    protected static final String FILE_NAME = "CurrentUser";
 
     // This is a reference to all of our different collections. This way we don't have to type a
     // lot of code to access the same collection over and over again
@@ -185,23 +176,29 @@ public class DatabaseService {
                 });
     }
 
-    void setGroupData(String id, String name) {
-        Map<String, Object> group = new HashMap<>();
+//    void setGroupData(String id, String name) {
+//        Map<String, Object> group = new HashMap<>();
+//
+//        // Add the group to the Group Collection
+//        groupCollection.add(group)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Log.d(TAG, "DocumentSnapshot successfully written!");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Error writing document", e);
+//                    }
+//                });
+//    }
 
-        // Add the group to the Group Collection
-        groupCollection.add(group)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+    public static int getGroupNumber(final Context context){
+        SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+
+        return prefs.getInt("groupNumber", 0);
     }
 
     //Function to Delete User data from Database
@@ -403,12 +400,11 @@ public class DatabaseService {
     public void getMessageHelper(final int groupNumber) {
 
         DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<String>();
+        final ArrayList<String> documentID = new ArrayList<>();
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         documentID.add(document.getId());

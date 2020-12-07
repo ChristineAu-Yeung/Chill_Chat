@@ -48,7 +48,7 @@ public class ChatFragment extends Fragment {
         // Gets all the messages and keeps getting em
         //Group number is hardCoded in.
         //TODO we have to figure a way to assign groupNumbers to users
-        db.getMessageHelper(0);
+        db.getMessageHelper(DatabaseService.getGroupNumber(getContext()));
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -79,7 +79,7 @@ public class ChatFragment extends Fragment {
                             text,
                             DatabaseService.getDisplayName(),
                             //TODO groupNumber is hardCoded in
-                            0,
+                            DatabaseService.getGroupNumber(getContext()),
                             null, // NULL because we want to generate a new ID
                             DatabaseService.getUID());
                     chatMessages.add(message);
