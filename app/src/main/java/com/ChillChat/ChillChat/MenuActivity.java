@@ -132,6 +132,7 @@ public class MenuActivity extends AppCompatActivity {
             case R.id.action_one:
                 Log.i("Test", "MADE IT HERE");
                 //Todo - Here add functionality that will allow to change group
+                DatabaseService.randomizeGroup(getApplicationContext());
                 return true;
         }
         return false;

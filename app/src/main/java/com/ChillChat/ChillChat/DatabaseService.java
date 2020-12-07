@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -332,7 +333,7 @@ public class DatabaseService {
      *
      * @param groupDocumentString The group from which we grab messages
      */
-    public void getMessages(String groupDocumentString) {
+    public void getMessages(String groupDocumentString, final Context context) {
         groupCollection.document(groupDocumentString)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -354,7 +355,7 @@ public class DatabaseService {
                                             incomingMessages.get(i).get("message"),
                                             incomingMessages.get(i).get("sender"),
 
-                                            0, //TODO this is hardcoded groupNumber
+                                            getGroupNumber(context), //TODO this is hardcoded groupNumber
                                             incomingMessages.get(i).get("msgId"),
                                             incomingMessages.get(i).get("userID"));
 
@@ -384,7 +385,7 @@ public class DatabaseService {
      *
      * @param groupNumber Specifies which group to fetch
      */
-    public void getMessageHelper(final int groupNumber) {
+    public void getMessageHelper(final int groupNumber, final Context context) {
 
         DatabaseService db = new DatabaseService();
         final ArrayList<String> documentID = new ArrayList<>();
@@ -396,7 +397,47 @@ public class DatabaseService {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         documentID.add(document.getId());
                     }
-                    getMessages(documentID.get(groupNumber));
+                    getMessages(documentID.get(groupNumber), context);
+
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
+    }
+
+    /**
+     * This function randomizes the group that the user is in.
+     * @param context
+     */
+    public static void randomizeGroup(final Context context){
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+
+                    int storedGroupNumber = getGroupNumber(context);
+
+                    Random rand = new Random();
+                    int random_integer = rand.nextInt(documentID.size());
+
+                    while(random_integer == storedGroupNumber){
+                        random_integer = rand.nextInt(documentID.size());
+                    }
+
+                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+                    //Edit the group number to be the new group number
+                    edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
+                    edit.apply();
+
+                    Log.i(TAG, "Successfully randomized group number");
 
                 } else {
                     Log.i(TAG, "Unsuccessful");
