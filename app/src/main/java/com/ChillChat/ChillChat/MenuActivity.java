@@ -85,6 +85,7 @@ public class MenuActivity extends AppCompatActivity {
                                     SharedPreferences.Editor edit = prefs.edit();
                                     //Edit the DefaultEmail to be text from email and commit changes
                                     edit.putString("Email", "Void");
+                                    edit.putInt("groupNumber", 0);
                                     edit.commit();
                                     //If anonymous user must delete from the database below
                                     deleteAnonymousUser();

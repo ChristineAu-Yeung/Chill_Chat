@@ -79,7 +79,7 @@ public class DatabaseService {
         user.put("dateRegistered", FieldValue.serverTimestamp());
         user.put("age", 0);
         user.put("biography", "");
-        user.put("profileImage","");
+        user.put("profileImage", "");
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
@@ -98,57 +98,57 @@ public class DatabaseService {
     }
 
     public void getProfileData(final String userID, final FragmentActivity result) {
-            DatabaseService db = new DatabaseService();
+        DatabaseService db = new DatabaseService();
 
-            // Create a reference to the cities collection
-            CollectionReference userRef = db.userCollection;
-            DocumentReference reference = userRef.document(userID);
+        // Create a reference to the cities collection
+        CollectionReference userRef = db.userCollection;
+        DocumentReference reference = userRef.document(userID);
 
-            reference.get().
-                    addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
+        reference.get().
+                addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
 
-                        DocumentSnapshot document = task.getResult();
+                            DocumentSnapshot document = task.getResult();
 
-                        if (document.exists()) {
-                            Map profileData = document.getData();
-                            Collection data = profileData.values();
-                            User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
-                                            (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
+                            if (document.exists()) {
+                                Map profileData = document.getData();
+                                Collection data = profileData.values();
+                                User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
+                                        (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
-                            EditText name = result.findViewById(R.id.nameEditText);
-                            EditText register = result.findViewById(R.id.registeredEditText);
-                            EditText age = result.findViewById(R.id.ageEditText);
-                            EditText bio = result.findViewById(R.id.bioEditText);
+                                EditText name = result.findViewById(R.id.nameEditText);
+                                EditText register = result.findViewById(R.id.registeredEditText);
+                                EditText age = result.findViewById(R.id.ageEditText);
+                                EditText bio = result.findViewById(R.id.bioEditText);
 
-                            name.setText(user.getFirstName());
-                            register.setText(user.getDateRegistered().toString());
-                            age.setText(String.valueOf(user.getAge()));
-                            bio.setText(user.getBio());
+                                name.setText(user.getFirstName());
+                                register.setText(user.getDateRegistered().toString());
+                                age.setText(String.valueOf(user.getAge()));
+                                bio.setText(user.getBio());
 
-                            //User's Profile Picture
-                            ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
-                            if("Anonymous".equals(user.getFirstName())) {
-                                Picasso.get().load(defaultImage).into(profilePic);
-                            } else {
-                                Bitmap bmpImage = user.getProfileImage();
-                                if(bmpImage != null) {
-                                    profilePic.setImageBitmap(bmpImage);
+                                //User's Profile Picture
+                                ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
+                                if ("Anonymous".equals(user.getFirstName())) {
+                                    Picasso.get().load(defaultImage).into(profilePic);
                                 } else {
-                                    Picasso.get().load(userImage).into(profilePic);
+                                    Bitmap bmpImage = user.getProfileImage();
+                                    if (bmpImage != null) {
+                                        profilePic.setImageBitmap(bmpImage);
+                                    } else {
+                                        Picasso.get().load(userImage).into(profilePic);
+                                    }
                                 }
-                            }
 
-                    } else {
-                            Log.d(TAG, "No such document");
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.w(TAG, "get failed with ", task.getException());
+                        }
                     }
-                } else {
-                        Log.w(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+                });
 
     }
 
@@ -176,26 +176,13 @@ public class DatabaseService {
                 });
     }
 
-//    void setGroupData(String id, String name) {
-//        Map<String, Object> group = new HashMap<>();
-//
-//        // Add the group to the Group Collection
-//        groupCollection.add(group)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Log.d(TAG, "DocumentSnapshot successfully written!");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error writing document", e);
-//                    }
-//                });
-//    }
-
-    public static int getGroupNumber(final Context context){
+    /**
+     * Function to get the current group number from shared preferences
+     *
+     * @param context The context bro
+     * @return The integer representing the current group number
+     */
+    public static int getGroupNumber(final Context context) {
         SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
 
         return prefs.getInt("groupNumber", 0);
@@ -260,7 +247,7 @@ public class DatabaseService {
 
     /**
      * This function fetches the content of message from ChatMessage and parse it to a HashMap
-     *
+     * <p>
      * message
      * firstName
      * messageID
@@ -268,7 +255,7 @@ public class DatabaseService {
      *
      * @param message
      */
-    public Map<String, Object> getMessageContent(ChatMessage message){
+    public Map<String, Object> getMessageContent(ChatMessage message) {
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("message", message.message);
@@ -338,7 +325,7 @@ public class DatabaseService {
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
-     *
+     * <p>
      * **UPDATE** The document is now fetched from the helper function getMessageHelper
      * Due to an aSynchronous problem, the helper will fetch the groupDocument first
      * to avoid a potential thread block
@@ -418,7 +405,6 @@ public class DatabaseService {
         });
     }
 
-
     /**
      * @return - Null if the user does not exist
      * - [String] "Anonymous" if they're anon
@@ -440,6 +426,7 @@ public class DatabaseService {
 
     /**
      * This function will set the information for a specific message about the provided user
+     *
      * @return - void
      */
     public static void getUserData(final String userID, final View result, final ImageView userPic) {
@@ -461,7 +448,7 @@ public class DatabaseService {
                         user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
 
                         //Check if the user is Anonymous and send default image
-                        if("Anonymous".equals(user.getFirstName())) {
+                        if ("Anonymous".equals(user.getFirstName())) {
                             Picasso.get().load(defaultImage).into(userPic);
                         } else {
                             //ToDo - Get the user image from the database once this is possible
