@@ -132,6 +132,7 @@ public class MenuActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_one) {
             Log.i("Test", "User tapped the rng button");
             DatabaseService.randomizeGroup(getApplicationContext());
+            DatabaseService.sendGroupMemberHelper(getApplicationContext());
             Intent intent = getIntent();
             finish();
             startActivity(intent);

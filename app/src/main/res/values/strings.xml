@@ -18,4 +18,5 @@
     <string name="chat_home">Chat</string>
     <string name="profile_home">Profile</string>
     <string name="logout_home">Logout</string>
+    <string name="anonymous">Anonymous</string>
 </resources>

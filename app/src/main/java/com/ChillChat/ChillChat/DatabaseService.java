@@ -273,7 +273,7 @@ public class DatabaseService {
      *
      * @param msg, documentUID
      */
-    public static void sendMessage(Map<String, Object> msg, String documentUID) {
+    public void sendMessage(Map<String, Object> msg, String documentUID) {
         DatabaseService db = new DatabaseService();
         db.groupCollection
                 .document(documentUID)
@@ -314,6 +314,55 @@ public class DatabaseService {
                         documentID.add(document.getId());
                     }
                     sendMessage(msgMap, documentID.get(message.groupNumber));
+
+                } else {
+                    Log.w(TAG, "sendMessageHelper: Unsuccessful query");
+                }
+            }
+        });
+    }
+
+    /**
+     *
+     * @param documentUID
+     */
+    public static void sendGroupMember(String documentUID){
+        DatabaseService db = new DatabaseService();
+//        db.groupCollection
+//                .document(documentUID)
+//                .update("members", FieldValue.arrayUnion(get))
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.i(TAG, "Message sent");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Message not sent");
+//                    }
+//                });
+    }
+
+    /**
+     * This should be the start of a set of functions that tell the database that a user has joined
+     * or left.
+     */
+    public static void sendGroupMemberHelper(final Context context){
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+
+                    sendGroupMember(documentID.get(getGroupNumber(context)));
 
                 } else {
                     Log.w(TAG, "sendMessageHelper: Unsuccessful query");
@@ -435,7 +484,7 @@ public class DatabaseService {
                     edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
                     edit.apply();
 
-                    Log.i(TAG, "Successfully randomized group number to group " + random_integer);
+                    Log.i(TAG, "Successfully stored new group number");
 
                 } else {
                     Log.w(TAG, "randomizeGroup: Unable to query group documents");
@@ -463,6 +512,8 @@ public class DatabaseService {
         while (random_integer == storedGroupNumber) {
             random_integer = rand.nextInt(documentSize);
         }
+
+        Log.i(TAG, "Successfully randomized group number to group " + random_integer);
 
         return random_integer;
     }
@@ -502,8 +553,6 @@ public class DatabaseService {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Map userData = document.getData();
-                        Collection data = userData.values();
                         User user;
                         user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
 
@@ -523,14 +572,14 @@ public class DatabaseService {
                         Picasso.get().load(defaultImage).into(userPic);
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
-                        displayName.setText("Anonymous");
+                        displayName.setText(R.string.anonymous);
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
                     Picasso.get().load(defaultImage).into(userPic);
                     //Set the user name under message
                     TextView displayName = result.findViewById(R.id.user_name);
-                    displayName.setText("Anonymous");
+                    displayName.setText(R.string.anonymous);
                 }
             }
         });
