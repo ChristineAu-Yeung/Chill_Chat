@@ -38,6 +38,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 import static android.graphics.Color.parseColor;
@@ -74,7 +75,7 @@ public class MenuActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 //Gets triggered on nav_logout
-                if(id==R.id.nav_logout) {
+                if (id == R.id.nav_logout) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
                     builder.setMessage("Are you sure you want to log out?")
                             .setTitle("Attention")
@@ -128,12 +129,14 @@ public class MenuActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_one:
-                Log.i("Test", "MADE IT HERE");
-                //Todo - Here add functionality that will allow to change group
-                DatabaseService.randomizeGroup(getApplicationContext());
-                return true;
+        if (item.getItemId() == R.id.action_one) {
+            Log.i("Test", "User tapped the rng button");
+            DatabaseService.randomizeGroup(getApplicationContext());
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+//            ChatFragment.externallyCallDatasetChanged();
+            return true;
         }
         return false;
     }

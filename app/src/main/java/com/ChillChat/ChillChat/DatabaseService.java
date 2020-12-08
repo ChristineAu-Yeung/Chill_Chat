@@ -254,7 +254,7 @@ public class DatabaseService {
      * messageID
      * userID
      *
-     * @param message
+     * @param message Instance of the message object in question
      */
     public Map<String, Object> getMessageContent(ChatMessage message) {
 
@@ -355,7 +355,8 @@ public class DatabaseService {
                                             incomingMessages.get(i).get("message"),
                                             incomingMessages.get(i).get("sender"),
 
-                                            getGroupNumber(context), //TODO this is hardcoded groupNumber
+                                            getGroupNumber(context),
+
                                             incomingMessages.get(i).get("msgId"),
                                             incomingMessages.get(i).get("userID"));
 
@@ -408,9 +409,10 @@ public class DatabaseService {
 
     /**
      * This function randomizes the group that the user is in.
-     * @param context
+     *
+     * @param context The current context of the app
      */
-    public static void randomizeGroup(final Context context){
+    public static void randomizeGroup(final Context context) {
         DatabaseService db = new DatabaseService();
         final ArrayList<String> documentID = new ArrayList<>();
 
@@ -422,25 +424,29 @@ public class DatabaseService {
                         documentID.add(document.getId());
                     }
 
+                    // Get the stored group number
                     int storedGroupNumber = getGroupNumber(context);
 
+                    // Generate a random group number [0 to documentID.size()]
                     Random rand = new Random();
                     int random_integer = rand.nextInt(documentID.size());
 
-                    while(random_integer == storedGroupNumber){
+                    // Checks if the new group number is in fact new and randomizes if it fails
+                    while (random_integer == storedGroupNumber) {
                         random_integer = rand.nextInt(documentID.size());
                     }
 
                     SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
-                    //Edit the group number to be the new group number
+
+                    //Edit the group number to be the new one
                     edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
                     edit.apply();
 
-                    Log.i(TAG, "Successfully randomized group number");
+                    Log.i(TAG, "Successfully randomized group number to group " + random_integer);
 
                 } else {
-                    Log.i(TAG, "Unsuccessful");
+                    Log.w(TAG, "randomizeGroup: Unable to query group documents");
                 }
             }
         });
@@ -467,8 +473,6 @@ public class DatabaseService {
 
     /**
      * This function will set the information for a specific message about the provided user
-     *
-     * @return - void
      */
     public static void getUserData(final String userID, final View result, final ImageView userPic) {
         DatabaseService db = new DatabaseService();
