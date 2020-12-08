@@ -303,7 +303,7 @@ public class DatabaseService {
 
         final Map<String, Object> msgMap = getMessageContent(message);
         DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<String>();
+        final ArrayList<String> documentID = new ArrayList<>();
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -316,7 +316,7 @@ public class DatabaseService {
                     sendMessage(msgMap, documentID.get(message.groupNumber));
 
                 } else {
-                    Log.i(TAG, "Unsuccessful");
+                    Log.w(TAG, "sendMessageHelper: Unsuccessful query");
                 }
             }
         });
@@ -424,18 +424,10 @@ public class DatabaseService {
                         documentID.add(document.getId());
                     }
 
-                    // Get the stored group number
-                    int storedGroupNumber = getGroupNumber(context);
+                    // Run the random function
+                    int random_integer = randomizeGroupHelper(context, documentID.size());
 
-                    // Generate a random group number [0 to documentID.size()]
-                    Random rand = new Random();
-                    int random_integer = rand.nextInt(documentID.size());
-
-                    // Checks if the new group number is in fact new and randomizes if it fails
-                    while (random_integer == storedGroupNumber) {
-                        random_integer = rand.nextInt(documentID.size());
-                    }
-
+                    // Open shared prefs for writing
                     SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
 
@@ -450,6 +442,29 @@ public class DatabaseService {
                 }
             }
         });
+    }
+
+    /**
+     * Helper function that generates the new group number
+     *
+     * @param context Current context of the app
+     * @param documentSize Size of the array containing all the group documents
+     * @return random_integer - Int representing the new group number
+     */
+    private static int randomizeGroupHelper(Context context, int documentSize){
+        // Get the stored group number
+        int storedGroupNumber = getGroupNumber(context);
+
+        // Generate a random group number [0 to documentID.size()]
+        Random rand = new Random();
+        int random_integer = rand.nextInt(documentSize);
+
+        // Checks if the new group number is in fact new and randomizes if it fails
+        while (random_integer == storedGroupNumber) {
+            random_integer = rand.nextInt(documentSize);
+        }
+
+        return random_integer;
     }
 
     /**
