@@ -118,7 +118,9 @@ public class SignupActivity extends AppCompatActivity {
                             //Edit the Email to be text from email and commit changes
                             edit.putString("Email", email);
                             edit.putInt("groupNumber", 0); // Hardcoded for newcomers
-                            edit.commit();
+                            edit.apply();
+
+                            DatabaseService.sendGroupMemberHelper(0, 0);
 
                             // Update the user's document as well as profile data
                             DatabaseService.updateUserData(email, firstName);

@@ -48,6 +48,7 @@ public class ChatFragment extends Fragment {
         // Gets all the messages and keeps getting em
         //TODO we have to figure a way to assign groupNumbers to users
         db.getMessageHelper(DatabaseService.getGroupNumber(getContext()), getContext());
+
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);

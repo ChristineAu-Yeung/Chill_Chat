@@ -323,33 +323,57 @@ public class DatabaseService {
     }
 
     /**
+     * This function should update the member list for the current user's respective group
      *
-     * @param documentUID
+     * TODO Function should be able to remove users as well depending on the context
+     *
+     * @param oldDocumentID - ID of the old group document that we're updating
+     * @param newDocumentID - ID of the new group document that we're updating
      */
-    public static void sendGroupMember(String documentUID){
+    public static void sendGroupMember(String oldDocumentID, String newDocumentID){
         DatabaseService db = new DatabaseService();
-//        db.groupCollection
-//                .document(documentUID)
-//                .update("members", FieldValue.arrayUnion(get))
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.i(TAG, "Message sent");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Message not sent");
-//                    }
-//                });
+        String uid = getUID();
+
+        // First, remove the user from the old group
+        db.groupCollection
+                .document(oldDocumentID)
+                .update("members", FieldValue.arrayRemove(uid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Member removed from list");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "Failed to remove member from list");
+                    }
+                });
+
+        // Second, add the user to the new group
+        db.groupCollection
+                .document(newDocumentID)
+                .update("members", FieldValue.arrayUnion(uid))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Member added to list");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "Failed to add member to list");
+                    }
+                });
     }
 
     /**
      * This should be the start of a set of functions that tell the database that a user has joined
      * or left.
      */
-    public static void sendGroupMemberHelper(final Context context){
+    public static void sendGroupMemberHelper(final int oldGroupNumber, final int newGroupNumber){
         DatabaseService db = new DatabaseService();
         final ArrayList<String> documentID = new ArrayList<>();
 
@@ -362,10 +386,10 @@ public class DatabaseService {
                         documentID.add(document.getId());
                     }
 
-                    sendGroupMember(documentID.get(getGroupNumber(context)));
+                    sendGroupMember(documentID.get(oldGroupNumber), documentID.get(newGroupNumber));
 
                 } else {
-                    Log.w(TAG, "sendMessageHelper: Unsuccessful query");
+                    Log.i(TAG, "sendMessageHelper: Unsuccessful query");
                 }
             }
         });

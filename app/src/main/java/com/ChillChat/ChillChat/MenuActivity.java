@@ -131,12 +131,18 @@ public class MenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_one) {
             Log.i("Test", "User tapped the rng button");
+
+            // Get the current group number and then the new one
+            int oldGroupNumber = DatabaseService.getGroupNumber(getApplicationContext());
             DatabaseService.randomizeGroup(getApplicationContext());
-            DatabaseService.sendGroupMemberHelper(getApplicationContext());
+            int newGroupNumber = DatabaseService.getGroupNumber(getApplicationContext());
+
+            // Pass both numbers into the helper
+            DatabaseService.sendGroupMemberHelper(newGroupNumber, oldGroupNumber);
+
             Intent intent = getIntent();
             finish();
             startActivity(intent);
-//            ChatFragment.externallyCallDatasetChanged();
             return true;
         }
         return false;
