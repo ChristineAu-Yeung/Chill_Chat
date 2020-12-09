@@ -498,6 +498,7 @@ public class DatabaseService {
                     }
 
                     // Run the random function
+                    int oldGroupNumber = DatabaseService.getGroupNumber(context);
                     int random_integer = randomizeGroupHelper(context, documentID.size());
 
                     // Open shared prefs for writing
@@ -509,6 +510,12 @@ public class DatabaseService {
                     edit.apply();
 
                     Log.i(TAG, "Successfully stored new group number");
+                    int newGroupNumber = DatabaseService.getGroupNumber(context);
+                    DatabaseService.sendGroupMemberHelper(newGroupNumber, oldGroupNumber);
+
+                    Log.i(TAG, "Old group number" + oldGroupNumber);
+                    Log.i(TAG, "New group number" + newGroupNumber);
+
 
                 } else {
                     Log.w(TAG, "randomizeGroup: Unable to query group documents");
