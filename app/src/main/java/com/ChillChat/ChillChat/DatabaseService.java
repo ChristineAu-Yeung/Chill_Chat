@@ -1,6 +1,7 @@
 package com.ChillChat.ChillChat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -359,6 +360,7 @@ public class DatabaseService {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.i(TAG, "Member added to list");
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -457,12 +459,12 @@ public class DatabaseService {
      * The specific document index of the Array and return
      * The document corresponding to the groupNumber
      *
-     * @param groupNumber Specifies which group to fetch
      */
-    public void getMessageHelper(final int groupNumber, final Context context) {
+    public void getMessageHelper(final Context context) {
 
         DatabaseService db = new DatabaseService();
         final ArrayList<String> documentID = new ArrayList<>();
+
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -471,6 +473,7 @@ public class DatabaseService {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         documentID.add(document.getId());
                     }
+                    final int groupNumber = getGroupNumber(context);
                     getMessages(documentID.get(groupNumber), context);
 
                 } else {
@@ -498,7 +501,7 @@ public class DatabaseService {
                     }
 
                     // Run the random function
-                    int oldGroupNumber = DatabaseService.getGroupNumber(context);
+
                     int random_integer = randomizeGroupHelper(context, documentID.size());
 
                     // Open shared prefs for writing
@@ -510,11 +513,9 @@ public class DatabaseService {
                     edit.apply();
 
                     Log.i(TAG, "Successfully stored new group number");
-                    int newGroupNumber = DatabaseService.getGroupNumber(context);
-                    DatabaseService.sendGroupMemberHelper(newGroupNumber, oldGroupNumber);
+                    ChatFragment.chatMessages.clear();
+                    ChatFragment.checkChat(context);
 
-                    Log.i(TAG, "Old group number" + oldGroupNumber);
-                    Log.i(TAG, "New group number" + newGroupNumber);
 
 
                 } else {

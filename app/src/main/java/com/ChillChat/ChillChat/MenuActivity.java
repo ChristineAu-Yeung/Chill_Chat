@@ -46,6 +46,7 @@ import static android.graphics.Color.parseColor;
 public class MenuActivity extends AppCompatActivity {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+    private static final String TAG = "MenuActivity";
     //Variables for Navigation Drawer
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawer;
@@ -133,16 +134,14 @@ public class MenuActivity extends AppCompatActivity {
             Log.i("Test", "User tapped the rng button");
 
             // Get the current group number and then the new one
-            int oldGroupNumber = DatabaseService.getGroupNumber(getApplicationContext());
-            DatabaseService.randomizeGroup(getApplicationContext());
-            int newGroupNumber = DatabaseService.getGroupNumber(getApplicationContext());
 
-            // Pass both numbers into the helper
-            DatabaseService.sendGroupMemberHelper(newGroupNumber, oldGroupNumber);
+            DatabaseService.randomizeGroup(getApplicationContext());
+
 
             Intent intent = getIntent();
             finish();
             startActivity(intent);
+
             return true;
         }
         return false;

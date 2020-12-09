@@ -47,7 +47,7 @@ public class ChatFragment extends Fragment {
 
         // Gets all the messages and keeps getting em
         //TODO we have to figure a way to assign groupNumbers to users
-        db.getMessageHelper(DatabaseService.getGroupNumber(getContext()), getContext());
+        checkChat(getContext());
 
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
@@ -93,7 +93,11 @@ public class ChatFragment extends Fragment {
 
         return root;
     }
+    public static void checkChat(Context ctx) {
 
+        final DatabaseService db = new DatabaseService();
+        db.getMessageHelper(ctx);
+    }
     /**
      * Runs when onStart() state is called.
      * This function is used to check if the user is already signed in, preventing invalid login
