@@ -120,8 +120,6 @@ public class SignupActivity extends AppCompatActivity {
                             edit.putInt("groupNumber", 0); // Hardcoded for newcomers
                             edit.apply();
 
-                            DatabaseService.sendGroupMemberHelper(0, 0);
-
                             // Update the user's document as well as profile data
                             DatabaseService.updateUserData(email, firstName);
 

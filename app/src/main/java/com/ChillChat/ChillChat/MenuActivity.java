@@ -133,15 +133,8 @@ public class MenuActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_one) {
             Log.i("Test", "User tapped the rng button");
 
-            // Get the current group number and then the new one
-
+            // Randomize the group
             DatabaseService.randomizeGroup(getApplicationContext());
-
-
-            Intent intent = getIntent();
-            finish();
-            startActivity(intent);
-
             return true;
         }
         return false;

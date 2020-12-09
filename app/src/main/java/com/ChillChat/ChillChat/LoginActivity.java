@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                             edit.putString("Email", email);
                             edit.apply();
 
-                            DatabaseService.sendGroupMemberHelper(0, 0);
+//                            DatabaseService.sendGroupMemberHelper(0, 0);
 
                             // Sign in success, update UI with the signed-in user's information
                             Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
@@ -146,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
                     edit.putInt("groupNumber", 0); // Hardcoded for newcomers
                     edit.apply();
 
-                    DatabaseService.sendGroupMemberHelper(0, 0);
                     Toast.makeText(LoginActivity.this, "Anonymous Login Complete.", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(LoginActivity.this, MenuActivity.class));
 

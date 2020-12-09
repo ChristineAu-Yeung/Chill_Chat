@@ -1,7 +1,6 @@
 package com.ChillChat.ChillChat;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -115,8 +114,6 @@ public class DatabaseService {
                             DocumentSnapshot document = task.getResult();
 
                             if (document.exists()) {
-                                Map profileData = document.getData();
-                                Collection data = profileData.values();
                                 User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
                                         (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
@@ -324,80 +321,6 @@ public class DatabaseService {
     }
 
     /**
-     * This function should update the member list for the current user's respective group
-     *
-     * TODO Function should be able to remove users as well depending on the context
-     *
-     * @param oldDocumentID - ID of the old group document that we're updating
-     * @param newDocumentID - ID of the new group document that we're updating
-     */
-    public static void sendGroupMember(String oldDocumentID, String newDocumentID){
-        DatabaseService db = new DatabaseService();
-        String uid = getUID();
-
-        // First, remove the user from the old group
-        db.groupCollection
-                .document(oldDocumentID)
-                .update("members", FieldValue.arrayRemove(uid))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Member removed from list");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "Failed to remove member from list");
-                    }
-                });
-
-        // Second, add the user to the new group
-        db.groupCollection
-                .document(newDocumentID)
-                .update("members", FieldValue.arrayUnion(uid))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Member added to list");
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "Failed to add member to list");
-                    }
-                });
-    }
-
-    /**
-     * This should be the start of a set of functions that tell the database that a user has joined
-     * or left.
-     */
-    public static void sendGroupMemberHelper(final int oldGroupNumber, final int newGroupNumber){
-        DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<>();
-
-        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        documentID.add(document.getId());
-                    }
-
-                    sendGroupMember(documentID.get(oldGroupNumber), documentID.get(newGroupNumber));
-
-                } else {
-                    Log.i(TAG, "sendMessageHelper: Unsuccessful query");
-                }
-            }
-        });
-    }
-
-    /**
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
@@ -458,7 +381,6 @@ public class DatabaseService {
      * Instead of the HARDCODED document, this helper function for gettingMessages will FETCH
      * The specific document index of the Array and return
      * The document corresponding to the groupNumber
-     *
      */
     public void getMessageHelper(final Context context) {
 
@@ -514,9 +436,7 @@ public class DatabaseService {
 
                     Log.i(TAG, "Successfully stored new group number");
                     ChatFragment.chatMessages.clear();
-                    ChatFragment.checkChat(context);
-
-
+                    ChatFragment.checkChat(context, new DatabaseService());
 
                 } else {
                     Log.w(TAG, "randomizeGroup: Unable to query group documents");
@@ -528,11 +448,11 @@ public class DatabaseService {
     /**
      * Helper function that generates the new group number
      *
-     * @param context Current context of the app
+     * @param context      Current context of the app
      * @param documentSize Size of the array containing all the group documents
      * @return random_integer - Int representing the new group number
      */
-    private static int randomizeGroupHelper(Context context, int documentSize){
+    private static int randomizeGroupHelper(Context context, int documentSize) {
         // Get the stored group number
         int storedGroupNumber = getGroupNumber(context);
 
