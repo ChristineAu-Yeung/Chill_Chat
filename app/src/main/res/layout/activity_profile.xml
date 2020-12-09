@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileFragment">
+
+    <!--Profile Picture-->
+    <ImageView
+        android:id="@+id/profilePictureImageButton"
+        android:layout_width="187dp"
+        android:layout_height="156dp"
+        android:layout_marginTop="100dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--Name-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nameRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePictureImageButton">
+
+        <TextView
+            android:id="@+id/nameLabelTextView"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="@string/name"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/nameEditText"
+            android:layout_width="266dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:enabled="false"
+            app:layout_constraintStart_toEndOf="@+id/nameLabelTextView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--Age-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ageRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nameRelativeLayout">
+
+        <TextView
+            android:id="@+id/ageLabelTextView"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="@string/age"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/ageEditText"
+            android:layout_width="266dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:inputType="number"
+            android:enabled="false"
+            app:layout_constraintStart_toEndOf="@+id/ageLabelTextView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--Bio-->
+    <EditText
+        android:id="@+id/bioEditText"
+        android:layout_width="335dp"
+        android:layout_height="161dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:hint="Bio"
+        android:enabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ageRelativeLayout" />
+
+    <!--Registered Since-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/registeredRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bioEditText"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/registeredLabelTextView"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="@string/registered"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/registeredEditText"
+            android:layout_width="266dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:enabled="false"
+            android:hint="@string/registeredDate"
+            android:inputType="date"
+            app:layout_constraintStart_toEndOf="@+id/registeredLabelTextView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

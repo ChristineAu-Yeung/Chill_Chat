@@ -65,9 +65,6 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
-    // Make a blank age
-    // Make a blank bio
-    // Make a default profile pic
 
     /**
      * Helper Function, this is a helper method that should stay private to this class
@@ -462,15 +459,20 @@ public class DatabaseService {
                         Map userData = document.getData();
                         Collection data = userData.values();
                         User user;
-                        user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
+                        //user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
+                        user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
+                                (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
                         //Check if the user is Anonymous and send default image
                         if("Anonymous".equals(user.getFirstName())) {
                             Picasso.get().load(defaultImage).into(userPic);
                         } else {
-                            //ToDo - Get the user image from the database once this is possible
-                            //Temp - Until userImage is added to UserTable
-                            Picasso.get().load(userImage).into(userPic);
+                            Bitmap bmpImage = user.getProfileImage();
+                            if(bmpImage != null) {
+                                userPic.setImageBitmap(bmpImage);
+                            } else {
+                                Picasso.get().load(userImage).into(userPic);
+                            }
                         }
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
