@@ -99,9 +99,13 @@ public class LoginActivity extends AppCompatActivity {
                             //Open shared preference from file location and open editor
                             SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor edit = prefs.edit();
+                            edit.putInt("groupNumber", 0); // Hardcoded for newcomers -------------------------------------------------
                             //Edit the Email to be text from email and commit changes
                             edit.putString("Email", email);
-                            edit.commit();
+                            edit.apply();
+
+//                            DatabaseService.sendGroupMemberHelper(0, 0);
+
                             // Sign in success, update UI with the signed-in user's information
                             Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                             startActivity(intent);
@@ -139,7 +143,9 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
                     edit.putString("Email", "Anonymous");
-                    edit.commit();
+                    edit.putInt("groupNumber", 0); // Hardcoded for newcomers
+                    edit.apply();
+
                     Toast.makeText(LoginActivity.this, "Anonymous Login Complete.", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(LoginActivity.this, MenuActivity.class));
 

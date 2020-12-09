@@ -3,7 +3,6 @@ package com.ChillChat.ChillChat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,13 +15,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-
-import java.net.URI;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -36,7 +31,6 @@ public class ChatFragment extends Fragment {
     EditText chatEditText;
     Button sendButton;
 
-
     static ChatAdapter messageAdapter;
     public static ArrayList<ChatMessage> chatMessages;
 
@@ -46,9 +40,8 @@ public class ChatFragment extends Fragment {
         final DatabaseService db = new DatabaseService();
 
         // Gets all the messages and keeps getting em
-        //Group number is hardCoded in.
-        //TODO we have to figure a way to assign groupNumbers to users
-        db.getMessageHelper(0);
+        checkChat(getContext(), db);
+
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -78,8 +71,7 @@ public class ChatFragment extends Fragment {
                     ChatMessage message = new ChatMessage(
                             text,
                             DatabaseService.getDisplayName(),
-                            //TODO groupNumber is hardCoded in
-                            0,
+                            DatabaseService.getGroupNumber(getContext()),
                             null, // NULL because we want to generate a new ID
                             DatabaseService.getUID());
                     chatMessages.add(message);
@@ -93,6 +85,11 @@ public class ChatFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public static void checkChat(Context ctx, DatabaseService db) {
+
+        db.getMessageHelper(ctx);
     }
 
     /**
@@ -116,7 +113,7 @@ public class ChatFragment extends Fragment {
      * Helper function that lets DatabaseService notify messageAdapter that the message list
      * was updated
      */
-    public static void externallyCallDatasetChanged(){
+    public static void externallyCallDatasetChanged() {
         messageAdapter.notifyDataSetChanged();
         Log.i(TAG, "Externally called notifyDataSetChanged()");
     }
@@ -135,7 +132,9 @@ public class ChatFragment extends Fragment {
         }
 
         //Returns the message from chat at provided position
-        public ChatMessage getChatMessage(int position) { return chatMessages.get(position); }
+        public ChatMessage getChatMessage(int position) {
+            return chatMessages.get(position);
+        }
 
         //Gets run for each message in the Array
         public View getView(int position, View convertView, ViewGroup parent) {
