@@ -93,6 +93,14 @@ public class DatabaseService {
                 });
     }
 
+    /**
+     * getProfileData fetches information from the userID that then looks into the database
+     * and stores information in a User object.
+     *
+     * @param userID UID of the user(String)
+     * @param result The current activity to fetch data from(FragmentActivity)
+     */
+
     public void getProfileData(final String userID, final FragmentActivity result) {
         DatabaseService db = new DatabaseService();
 
@@ -145,6 +153,17 @@ public class DatabaseService {
 
     }
 
+    /**
+     * setProfileData Will update the users profile by placing it into the User
+     * class after fetching it from the data through the getProfileData function which
+     * will then update the user profile in real-time.
+     *
+     * @param firstName    Users firstName
+     * @param age          Users age
+     * @param biography    Users bio
+     * @param profileImage Users profileImage
+     */
+
     public void setProfileData(String firstName, long age, String biography, String profileImage) {
         Map<String, Object> user = new HashMap<>();
         user.put("firstName", firstName);
@@ -177,10 +196,16 @@ public class DatabaseService {
      */
     public static int getGroupNumber(final Context context) {
         SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-
+        //New users will always be placed in group 0
         return prefs.getInt("groupNumber", 0);
     }
 
+    /**
+     * Function that deletesUser data from Firebase
+     *
+     * @param uid (String)
+     *
+     */
     //Function to Delete User data from Database
     void deleteUserData(String uid) {
         userCollection.document(uid).delete();
