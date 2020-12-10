@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/sendButton"
-        android:layout_width="wrap_content"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
@@ -21,6 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@id/sendButton"
         android:ems="10"
+        android:maxLength="280"
         android:inputType="textPersonName" />
 
     <ListView

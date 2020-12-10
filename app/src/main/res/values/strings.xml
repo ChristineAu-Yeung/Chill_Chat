@@ -18,4 +18,15 @@
     <string name="chat_home">Chat</string>
     <string name="profile_home">Profile</string>
     <string name="logout_home">Logout</string>
+    <string name="about_us">Chill Chat is a social communication application that connects random people into group chats where they have the option to skip groups until they find
+        one that interests them. Users can decide whether they want to stay anonymous or create an account. </string>
+    <string name="instructions">Below are the instructions for how to use Chill Chat: \n
+        1) To send a message click on the text box on the chat screen, type, and then press send. \n
+        2) To go to a new group, press the two arrows in the top right. \n
+        3) To navigate around the application, use the menu in the top left and click on desired option. \n
+        4) To view a users profile, click on their message on the chat screen. \n
+        5) To change your profile information, go to the profile and fill in the text boxes, then click the pencil icon. \n
+        6) To change your profile picture, go to the profile and click on the image. Select a photo smaller than 1MB, then click on the pencil icon.</string>
+    <string name="authors">Brian Chan, Christine Au-yeung, Michael Tran, \n Ryan Polkiewicz, Sathusan Kandasamy</string>
+    <string name="version">Version 1.1 \n December 9, 2020</string>
 </resources>

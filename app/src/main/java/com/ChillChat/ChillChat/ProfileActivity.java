@@ -63,6 +63,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
+     * Event listener for the ImageButton on screen.
+     * Takes the user back to the chat activity.
+     */
+    public void goBack(View view) {
+        finish();
+    }
+
+    /**
      * This function gets the profile data from the cloud firestore.
      * The function has to set the view data inside to prevent async issues
      */
