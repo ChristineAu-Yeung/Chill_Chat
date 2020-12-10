@@ -124,6 +124,10 @@ public class MenuActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             //Call the function to place user in a new randomized group
                             DatabaseService.randomizeGroup(getApplicationContext());
+
+                            Intent intent = getIntent();
+                            finish();
+                            startActivity(intent);
                         }
                     })
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
