@@ -117,7 +117,8 @@ public class SignupActivity extends AppCompatActivity {
                             SharedPreferences.Editor edit = prefs.edit();
                             //Edit the Email to be text from email and commit changes
                             edit.putString("Email", email);
-                            edit.commit();
+                            edit.putInt("groupNumber", 0); // Hardcoded for newcomers
+                            edit.apply();
 
                             // Update the user's document as well as profile data
                             DatabaseService.updateUserData(email, firstName);

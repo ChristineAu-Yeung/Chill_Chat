@@ -1,5 +1,7 @@
 package com.ChillChat.ChillChat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
@@ -30,27 +32,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Random;
 
-import javax.net.ssl.HttpsURLConnection;
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
@@ -60,6 +49,9 @@ public class DatabaseService {
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    // Shared prefs file name
+    protected static final String FILE_NAME = "CurrentUser";
 
     // This is a reference to all of our different collections. This way we don't have to type a
     // lot of code to access the same collection over and over again
@@ -85,7 +77,7 @@ public class DatabaseService {
         user.put("dateRegistered", FieldValue.serverTimestamp());
         user.put("age", 0);
         user.put("biography", "");
-        user.put("profileImage","");
+        user.put("profileImage", "");
 
         // Add the user to the User Collection
         userCollection.document(uid).set(user)
@@ -104,57 +96,55 @@ public class DatabaseService {
     }
 
     public void getProfileData(final String userID, final FragmentActivity result) {
-            DatabaseService db = new DatabaseService();
+        DatabaseService db = new DatabaseService();
 
-            // Create a reference to the cities collection
-            CollectionReference userRef = db.userCollection;
-            DocumentReference reference = userRef.document(userID);
+        // Create a reference to the cities collection
+        CollectionReference userRef = db.userCollection;
+        DocumentReference reference = userRef.document(userID);
 
-            reference.get().
-                    addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
+        reference.get().
+                addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
 
-                        DocumentSnapshot document = task.getResult();
+                            DocumentSnapshot document = task.getResult();
 
-                        if (document.exists()) {
-                            Map profileData = document.getData();
-                            Collection data = profileData.values();
-                            User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
-                                            (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
+                            if (document.exists()) {
+                                User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
+                                        (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
-                            EditText name = result.findViewById(R.id.nameEditText);
-                            EditText register = result.findViewById(R.id.registeredEditText);
-                            EditText age = result.findViewById(R.id.ageEditText);
-                            EditText bio = result.findViewById(R.id.bioEditText);
+                                EditText name = result.findViewById(R.id.nameEditText);
+                                EditText register = result.findViewById(R.id.registeredEditText);
+                                EditText age = result.findViewById(R.id.ageEditText);
+                                EditText bio = result.findViewById(R.id.bioEditText);
 
-                            name.setText(user.getFirstName());
-                            register.setText(user.getDateRegistered().toString());
-                            age.setText(String.valueOf(user.getAge()));
-                            bio.setText(user.getBio());
+                                name.setText(user.getFirstName());
+                                register.setText(user.getDateRegistered().toString());
+                                age.setText(String.valueOf(user.getAge()));
+                                bio.setText(user.getBio());
 
-                            //User's Profile Picture
-                            ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
-                            if("Anonymous".equals(user.getFirstName())) {
-                                Picasso.get().load(defaultImage).into(profilePic);
-                            } else {
-                                Bitmap bmpImage = user.getProfileImage();
-                                if(bmpImage != null) {
-                                    profilePic.setImageBitmap(bmpImage);
+                                //User's Profile Picture
+                                ImageView profilePic = result.findViewById(R.id.profilePictureImageButton);
+                                if ("Anonymous".equals(user.getFirstName())) {
+                                    Picasso.get().load(defaultImage).into(profilePic);
                                 } else {
-                                    Picasso.get().load(userImage).into(profilePic);
+                                    Bitmap bmpImage = user.getProfileImage();
+                                    if (bmpImage != null) {
+                                        profilePic.setImageBitmap(bmpImage);
+                                    } else {
+                                        Picasso.get().load(userImage).into(profilePic);
+                                    }
                                 }
-                            }
 
-                    } else {
-                            Log.d(TAG, "No such document");
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.w(TAG, "get failed with ", task.getException());
+                        }
                     }
-                } else {
-                        Log.w(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+                });
 
     }
 
@@ -182,23 +172,16 @@ public class DatabaseService {
                 });
     }
 
-    void setGroupData(String id, String name) {
-        Map<String, Object> group = new HashMap<>();
+    /**
+     * Function to get the current group number from shared preferences
+     *
+     * @param context The context bro
+     * @return The integer representing the current group number
+     */
+    public static int getGroupNumber(final Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
 
-        // Add the group to the Group Collection
-        groupCollection.add(group)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+        return prefs.getInt("groupNumber", 0);
     }
 
     //Function to Delete User data from Database
@@ -260,15 +243,15 @@ public class DatabaseService {
 
     /**
      * This function fetches the content of message from ChatMessage and parse it to a HashMap
-     *
+     * <p>
      * message
      * firstName
      * messageID
      * userID
      *
-     * @param message
+     * @param message Instance of the message object in question
      */
-    public Map<String, Object> getMessageContent(ChatMessage message){
+    public Map<String, Object> getMessageContent(ChatMessage message) {
 
         Map<String, Object> msg = new HashMap<>();
         msg.put("message", message.message);
@@ -285,7 +268,7 @@ public class DatabaseService {
      *
      * @param msg, documentUID
      */
-    public static void sendMessage(Map<String, Object> msg, String documentUID) {
+    public void sendMessage(Map<String, Object> msg, String documentUID) {
         DatabaseService db = new DatabaseService();
         db.groupCollection
                 .document(documentUID)
@@ -315,7 +298,7 @@ public class DatabaseService {
 
         final Map<String, Object> msgMap = getMessageContent(message);
         DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<String>();
+        final ArrayList<String> documentID = new ArrayList<>();
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -328,7 +311,7 @@ public class DatabaseService {
                     sendMessage(msgMap, documentID.get(message.groupNumber));
 
                 } else {
-                    Log.i(TAG, "Unsuccessful");
+                    Log.w(TAG, "sendMessageHelper: Unsuccessful query");
                 }
             }
         });
@@ -338,14 +321,14 @@ public class DatabaseService {
      * Gets all the messages for the corresponding group (see param) and update the list of messages
      * Currently only gets the message, but has the capability to get other data based on the
      * ChatMessage class and its properties.
-     *
+     * <p>
      * **UPDATE** The document is now fetched from the helper function getMessageHelper
      * Due to an aSynchronous problem, the helper will fetch the groupDocument first
      * to avoid a potential thread block
      *
      * @param groupDocumentString The group from which we grab messages
      */
-    public void getMessages(String groupDocumentString) {
+    public void getMessages(String groupDocumentString, final Context context) {
         groupCollection.document(groupDocumentString)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -367,7 +350,8 @@ public class DatabaseService {
                                             incomingMessages.get(i).get("message"),
                                             incomingMessages.get(i).get("sender"),
 
-                                            0, //TODO this is hardcoded groupNumber
+                                            getGroupNumber(context),
+
                                             incomingMessages.get(i).get("msgId"),
                                             incomingMessages.get(i).get("userID"));
 
@@ -394,23 +378,22 @@ public class DatabaseService {
      * Instead of the HARDCODED document, this helper function for gettingMessages will FETCH
      * The specific document index of the Array and return
      * The document corresponding to the groupNumber
-     *
-     * @param groupNumber Specifies which group to fetch
      */
-    public void getMessageHelper(final int groupNumber) {
+    public void getMessageHelper(final Context context) {
 
         DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<String>();
+        final ArrayList<String> documentID = new ArrayList<>();
+
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         documentID.add(document.getId());
                     }
-                    getMessages(documentID.get(groupNumber));
+                    final int groupNumber = getGroupNumber(context);
+                    getMessages(documentID.get(groupNumber), context);
 
                 } else {
                     Log.i(TAG, "Unsuccessful");
@@ -419,6 +402,70 @@ public class DatabaseService {
         });
     }
 
+    /**
+     * This function randomizes the group that the user is in.
+     *
+     * @param context The current context of the app
+     */
+    public static void randomizeGroup(final Context context) {
+        DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+
+                    // Run the random function
+
+                    int random_integer = randomizeGroupHelper(context, documentID.size());
+
+                    // Open shared prefs for writing
+                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+
+                    //Edit the group number to be the new one
+                    edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
+                    edit.apply();
+
+                    Log.i(TAG, "Successfully stored new group number");
+                    ChatFragment.chatMessages.clear();
+                    ChatFragment.checkChat(context, new DatabaseService());
+
+                } else {
+                    Log.w(TAG, "randomizeGroup: Unable to query group documents");
+                }
+            }
+        });
+    }
+
+    /**
+     * Helper function that generates the new group number
+     *
+     * @param context      Current context of the app
+     * @param documentSize Size of the array containing all the group documents
+     * @return random_integer - Int representing the new group number
+     */
+    private static int randomizeGroupHelper(Context context, int documentSize) {
+        // Get the stored group number
+        int storedGroupNumber = getGroupNumber(context);
+
+        // Generate a random group number [0 to documentID.size()]
+        Random rand = new Random();
+        int random_integer = rand.nextInt(documentSize);
+
+        // Checks if the new group number is in fact new and randomizes if it fails
+        while (random_integer == storedGroupNumber) {
+            random_integer = rand.nextInt(documentSize);
+        }
+
+        Log.i(TAG, "Successfully randomized group number to group " + random_integer);
+
+        return random_integer;
+    }
 
     /**
      * @return - Null if the user does not exist
@@ -441,7 +488,6 @@ public class DatabaseService {
 
     /**
      * This function will set the information for a specific message about the provided user
-     * @return - void
      */
     public static void getUserData(final String userID, final View result, final ImageView userPic) {
         DatabaseService db = new DatabaseService();
@@ -456,15 +502,13 @@ public class DatabaseService {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Map userData = document.getData();
-                        Collection data = userData.values();
                         User user;
                         //user = new User(document.getDate("dateRegistered"), (String) document.get("email"), (String) document.get("firstName"), userID);
                         user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
                                 (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"));
 
                         //Check if the user is Anonymous and send default image
-                        if("Anonymous".equals(user.getFirstName())) {
+                        if ("Anonymous".equals(user.getFirstName())) {
                             Picasso.get().load(defaultImage).into(userPic);
                         } else {
                             Bitmap bmpImage = user.getProfileImage();
@@ -482,14 +526,14 @@ public class DatabaseService {
                         Picasso.get().load(defaultImage).into(userPic);
                         //Set the user name under message
                         TextView displayName = result.findViewById(R.id.user_name);
-                        displayName.setText("Anonymous");
+                        displayName.setText(R.string.anonymous);
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
                     Picasso.get().load(defaultImage).into(userPic);
                     //Set the user name under message
                     TextView displayName = result.findViewById(R.id.user_name);
-                    displayName.setText("Anonymous");
+                    displayName.setText(R.string.anonymous);
                 }
             }
         });

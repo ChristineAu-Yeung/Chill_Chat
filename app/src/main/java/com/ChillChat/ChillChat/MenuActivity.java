@@ -38,6 +38,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 import static android.graphics.Color.parseColor;
@@ -45,6 +46,7 @@ import static android.graphics.Color.parseColor;
 public class MenuActivity extends AppCompatActivity {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
+    private static final String TAG = "MenuActivity";
     //Variables for Navigation Drawer
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawer;
@@ -74,7 +76,7 @@ public class MenuActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 //Gets triggered on nav_logout
-                if(id==R.id.nav_logout) {
+                if (id == R.id.nav_logout) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
                     builder.setMessage("Are you sure you want to log out?")
                             .setTitle("Attention")
@@ -85,6 +87,7 @@ public class MenuActivity extends AppCompatActivity {
                                     SharedPreferences.Editor edit = prefs.edit();
                                     //Edit the DefaultEmail to be text from email and commit changes
                                     edit.putString("Email", "Void");
+                                    edit.putInt("groupNumber", 0);
                                     edit.commit();
                                     //If anonymous user must delete from the database below
                                     deleteAnonymousUser();
@@ -127,11 +130,12 @@ public class MenuActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_one:
-                Log.i("Test", "MADE IT HERE");
-                //Todo - Here add functionality that will allow to change group
-                return true;
+        if (item.getItemId() == R.id.action_one) {
+            Log.i("Test", "User tapped the rng button");
+
+            // Randomize the group
+            DatabaseService.randomizeGroup(getApplicationContext());
+            return true;
         }
         return false;
     }

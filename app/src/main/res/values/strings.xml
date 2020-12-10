@@ -29,4 +29,5 @@
         6) To change your profile picture, go to the profile and click on the image. Select a photo smaller than 1MB, then click on the pencil icon.</string>
     <string name="authors">Brian Chan, Christine Au-yeung, Michael Tran, \n Ryan Polkiewicz, Sathusan Kandasamy</string>
     <string name="version">Version 1.1 \n December 9, 2020</string>
+    <string name="anonymous">Anonymous</string>
 </resources>
