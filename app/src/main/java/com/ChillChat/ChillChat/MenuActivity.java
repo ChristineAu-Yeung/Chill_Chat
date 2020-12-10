@@ -1,36 +1,22 @@
 package com.ChillChat.ChillChat;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -46,7 +32,6 @@ import static android.graphics.Color.parseColor;
 public class MenuActivity extends AppCompatActivity {
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
-    private static final String TAG = "MenuActivity";
     //Variables for Navigation Drawer
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawer;
@@ -88,7 +73,7 @@ public class MenuActivity extends AppCompatActivity {
                                     //Edit the DefaultEmail to be text from email and commit changes
                                     edit.putString("Email", "Void");
                                     edit.putInt("groupNumber", 0);
-                                    edit.commit();
+                                    edit.apply();
                                     //If anonymous user must delete from the database below
                                     deleteAnonymousUser();
                                     //Set success to false then open activity
@@ -98,7 +83,7 @@ public class MenuActivity extends AppCompatActivity {
                                     finish();
                                 }
                             })
-                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
 
                                 }
@@ -131,10 +116,24 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_one) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+            builder.setMessage("Are you sure you want to change groups?")
+                    .setTitle("Attention")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int id) {
+                            //Call the function to place user in a new randomized group
+                            DatabaseService.randomizeGroup(getApplicationContext());
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    })
+                    .show();
             Log.i("Test", "User tapped the rng button");
 
-            // Randomize the group
-            DatabaseService.randomizeGroup(getApplicationContext());
             return true;
         }
         return false;

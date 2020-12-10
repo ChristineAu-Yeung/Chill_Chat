@@ -24,8 +24,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private static final String TAG = "EmailPassword";
     public static boolean success = false;
-    //private CallbackManager callbackManager;
-    private static final String EMAIL = "email";
     //Variable for SharedPreference
     protected static final String FILE_NAME = "CurrentUser";
 
@@ -99,12 +97,10 @@ public class LoginActivity extends AppCompatActivity {
                             //Open shared preference from file location and open editor
                             SharedPreferences prefs = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor edit = prefs.edit();
-                            edit.putInt("groupNumber", 0); // Hardcoded for newcomers -------------------------------------------------
+                            edit.putInt("groupNumber", 0);
                             //Edit the Email to be text from email and commit changes
                             edit.putString("Email", email);
                             edit.apply();
-
-//                            DatabaseService.sendGroupMemberHelper(0, 0);
 
                             // Sign in success, update UI with the signed-in user's information
                             Intent intent = new Intent(LoginActivity.this, MenuActivity.class);

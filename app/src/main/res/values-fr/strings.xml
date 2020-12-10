@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chill Chat</string>
+    <string name="edit">Éditer</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="name">Nom</string>
+    <string name="name_hint">Entrez votre nom</string>
+    <string name="age">Âge</string>
+    <string name="age_hint">Entrez votre âge</string>
+    <string name="bio_hint">Entrez une bio</string>
+    <string name="registered">Enregistré depuis ...</string>
+    <string name="registeredDate">11/15/2020</string>
+    <string name="title_activity_menu">MenuActivité</string>
+    <string name="navigation_drawer_open">Ouvrir le tiroir de navigation</string>
+    <string name="navigation_drawer_close">Fermer le panneau de navigation</string>
+    <string name="nav_header_title">Chill Chat</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="action_settings">Réglages</string>
+    <string name="chat_home">Bavarder</string>
+    <string name="profile_home">Profil</string>
+    <string name="logout_home">Se déconnecter</string>
+    <string name="aboutUs">À propos de nous</string>
+    <string name="about_us">Chill Chat est une application de communication sociale qui connecte des personnes aléatoires dans des discussions de groupe où elles ont la possibilité de sauter des groupes jusqu\'à ce qu\'elles trouvent
+        celui qui les intéresse. Les utilisateurs peuvent décider s\'ils souhaitent rester anonymes ou créer un compte.</string>
+    <string name="instructions">Vous trouverez ci-dessous les instructions \'utilisation de Chill Chat: \n
+        1) Pour envoyer un message, cliquez sur la zone de texte sur l\'écran de discussion, tapez, puis appuyez sur envoyer. \n
+        2) Pour accéder à un nouveau groupe, appuyez sur les deux flèches en haut à droite. \n
+        3) Pour naviguer dans l\'application, utilisez le menu en haut à gauche et cliquez sur l\'option souhaitée. \n
+        4) Pour afficher le profil d\'un utilisateur, cliquez sur son message sur l\'écran de discussion. \n
+        5) Pour modifier les informations de votre profil, accédez au profil et remplissez les zones de texte, puis cliquez sur l\'icône en forme de crayon. \n
+        6) Pour changer votre photo de profil, allez dans le profil et cliquez sur l\'image. Sélectionnez une photo inférieure à 1 Mo, puis cliquez sur \'icône en forme de crayon.</string>
+
+    <string name="authors">Brian Chan, Christine Au-yeung, Michael Tran, \n Ryan Polkiewicz, Sathusan Kandasamy</string>
+    <string name="version">Version 1.1 \n Décembre 9, 2020</string>
+    <string name="anonymous">Anonyme</string>
+</resources>
