@@ -98,7 +98,7 @@ public class MenuActivity extends AppCompatActivity {
                                     finish();
                                 }
                             })
-                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
 
                                 }
@@ -131,10 +131,23 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_one) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+            builder.setMessage("Are you sure you want to change groups?")
+                    .setTitle("Attention")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //Call the function to place user in a new randomized group
+                            DatabaseService.randomizeGroup(getApplicationContext());
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    })
+                    .show();
             Log.i("Test", "User tapped the rng button");
 
-            // Randomize the group
-            DatabaseService.randomizeGroup(getApplicationContext());
             return true;
         }
         return false;

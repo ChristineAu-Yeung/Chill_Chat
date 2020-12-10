@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -420,7 +421,6 @@ public class DatabaseService {
                     }
 
                     // Run the random function
-
                     int random_integer = randomizeGroupHelper(context, documentID.size());
 
                     // Open shared prefs for writing
