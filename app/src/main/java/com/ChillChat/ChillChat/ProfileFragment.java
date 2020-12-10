@@ -1,10 +1,14 @@
 package com.ChillChat.ChillChat;
 
-
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,26 +17,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+import java.net.URI;
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.common.data.BitmapTeleporter;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 
 public class ProfileFragment extends Fragment {
 
     protected DatabaseService db = new DatabaseService();
     private static final String TAG = "ProfileFragment";
+    private Button editButton;
     private ImageButton profileImageButton;
     private EditText name;
     private EditText age;
@@ -45,7 +57,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        Button editButton = (Button) root.findViewById(R.id.editButton);
+        editButton = (Button) root.findViewById(R.id.editButton);
         profileImageButton = (ImageButton) root.findViewById(R.id.profilePictureImageButton);
         name = (EditText) root.findViewById(R.id.nameEditText);
         age = (EditText) root.findViewById(R.id.ageEditText);
@@ -59,7 +71,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 //Sets the profileImage Bitmap to allow for profile updates without image swap.
                 //Todo - Need to fix the recycle bitmap issue
-                Bitmap pImage;
+                Bitmap pImage = null;
                 BitmapDrawable drawable = (BitmapDrawable) profileImageButton.getDrawable();
                 pImage = drawable.getBitmap();
                 //Continue normal process
@@ -96,7 +108,7 @@ public class ProfileFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         profileImageButton = (ImageButton) getView().findViewById(R.id.profilePictureImageButton);
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            Bitmap profileImage;
+            Bitmap profileImage = null;
             try {
                 Uri imageUri = data.getData();
                 profileImage = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),imageUri);
@@ -119,7 +131,7 @@ public class ProfileFragment extends Fragment {
      * The function has to set the view data inside to prevent async issues
      */
     private void GetProfile(){
-        db.getProfileData(DatabaseService.getUID(), getActivity());
+        db.getProfileData(db.getUID(), getActivity());
     }
 
     /**
@@ -130,6 +142,7 @@ public class ProfileFragment extends Fragment {
         bmp.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
         bmp.recycle();
         byte[] byteArray = bao.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.URL_SAFE);
+        String imageB64 = Base64.encodeToString(byteArray, Base64.URL_SAFE);
+        return imageB64;
     }
 }
