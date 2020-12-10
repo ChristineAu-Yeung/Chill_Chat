@@ -32,6 +32,7 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.BitmapCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.common.data.BitmapTeleporter;
@@ -78,8 +79,12 @@ public class ProfileFragment extends Fragment {
                 String ageString = age.getText().toString();
                 long ageNum = Long.parseLong(ageString);
                 String imageB64 = getImageData(pImage);
-                SetProfile(name.getText().toString(), ageNum, bio.getText().toString(), imageB64);
-                Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+                if(imageB64.length() * 2 < 1200000) {
+                    SetProfile(name.getText().toString(), ageNum, bio.getText().toString(), imageB64);
+                    Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "The file you selected is too large!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

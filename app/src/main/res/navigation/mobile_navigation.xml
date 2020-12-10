@@ -17,4 +17,10 @@
         android:label="@string/profile_home"
         tools:layout="@layout/fragment_profile" />
 
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.ChillChat.ChillChat.AboutFragment"
+        android:label="About Us"
+        tools:layout="@layout/fragment_about" />
+
 </navigation>
