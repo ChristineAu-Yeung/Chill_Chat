@@ -3,13 +3,11 @@ package com.ChillChat.ChillChat;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +32,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -100,8 +97,7 @@ public class DatabaseService {
         DatabaseService db = new DatabaseService();
 
         // Create a reference to the cities collection
-        CollectionReference userRef = db.userCollection;
-        DocumentReference reference = userRef.document(userID);
+        DocumentReference reference = db.userCollection.document(userID);
 
         reference.get().
                 addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -493,8 +489,7 @@ public class DatabaseService {
         DatabaseService db = new DatabaseService();
 
         // Create a reference to the cities collection
-        CollectionReference userRef = db.userCollection;
-        DocumentReference docRef = userRef.document(userID);
+        DocumentReference docRef = db.userCollection.document(userID);
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -512,7 +507,7 @@ public class DatabaseService {
                             Picasso.get().load(defaultImage).into(userPic);
                         } else {
                             Bitmap bmpImage = user.getProfileImage();
-                            if(bmpImage != null) {
+                            if (bmpImage != null) {
                                 userPic.setImageBitmap(bmpImage);
                             } else {
                                 Picasso.get().load(userImage).into(userPic);
@@ -537,58 +532,6 @@ public class DatabaseService {
                 }
             }
         });
-    }
-
-    /**
-     * Gets the user's photo url (AKA profile pic).
-     *
-     * @return URI that directs to the user's stored image URL in firebase.
-     */
-    public static Uri getImageUrl() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null && user.isAnonymous()) {
-            return Uri.parse(defaultImage);
-        } else if (user != null) {
-            return user.getPhotoUrl();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * TODO Code this so it takes the image's location and stores it in firebase first
-     * Sets the user's profile pic to whatever they uploaded.
-     *
-     * @param imageUrl The URI of the new profile pic once it is updated on the databse
-     */
-    public static void setImageUrl(Uri imageUrl) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null && user.isAnonymous()) {
-            Log.w(TAG, "Anonymous users should not be able to change their profile pictures.");
-        }
-        if (user != null) {
-            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setPhotoUri(imageUrl)
-                    .build();
-
-            user.updateProfile(profileUpdates)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            Log.d(TAG, "Profile picture updated.");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Profile picture was not updated.");
-                        }
-                    });
-        } else {
-            Log.w(TAG, "The user is null");
-        }
     }
 
     /**

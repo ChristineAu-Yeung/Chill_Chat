@@ -1,5 +1,6 @@
 package com.ChillChat.ChillChat;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -90,7 +90,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ChatMessage chatObject = chatMessages.get(position);
-                if(!chatObject.userID.equals(db.getUID())) {
+                if (!chatObject.userID.equals(DatabaseService.getUID())) {
                     Intent intent = new Intent(getActivity(), ProfileActivity.class);
                     intent.putExtra("userID", chatObject.userID);
                     startActivity(intent);
@@ -151,6 +151,7 @@ public class ChatFragment extends Fragment {
         }
 
         //Gets run for each message in the Array
+        @SuppressLint("InflateParams")
         public View getView(int position, View convertView, ViewGroup parent) {
             //Create inflater and set to current view
             LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -158,7 +159,7 @@ public class ChatFragment extends Fragment {
 
             //Open new DatabaseService and get the user ID
             DatabaseService db = new DatabaseService();
-            String currentUser = db.getUID();
+            String currentUser = DatabaseService.getUID();
             //Get the ChatMessage at provided position
             ChatMessage chatObject = getChatMessage(position);
             ImageView userPic;
@@ -175,7 +176,7 @@ public class ChatFragment extends Fragment {
 //            //Get the Image URL from the database and use the Picaasso plugin to set icon
 //            db.getUserDataHelper(chatObject.userID);
             //Try to do everything in this function
-            db.getUserData(chatObject.userID, result, userPic);
+            DatabaseService.getUserData(chatObject.userID, result, userPic);
 
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position

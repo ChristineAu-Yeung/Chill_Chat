@@ -4,9 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 
 public class User {
     private Date dateRegistered;
@@ -19,7 +17,6 @@ public class User {
 
     /**
      * Object that represents each user
-     *
      */
     public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID) {
         dateRegistered = sDateRegistered;
@@ -40,21 +37,25 @@ public class User {
         return dateRegistered;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return userID;
     }
 
-    public String getFirstName(){
+    public String getFirstName() {
         return firstName;
     }
 
-    public String getUserID(){
+    public String getUserID() {
         return userID;
     }
 
-    public String getBio() { return bio;}
+    public String getBio() {
+        return bio;
+    }
 
-    public long getAge() { return age;}
+    public long getAge() {
+        return age;
+    }
 
     public Bitmap getProfileImage() {
         //Converts the imageB64 String back into Bitmap

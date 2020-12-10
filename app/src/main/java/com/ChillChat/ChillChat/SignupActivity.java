@@ -23,7 +23,6 @@ import static android.graphics.Color.parseColor;
 public class SignupActivity extends AppCompatActivity {
     //Class variables
     private FirebaseAuth mAuth;
-    private static boolean success = false;
     private static final String TAG = "EmailPassword";
     //Screen elements
     private EditText txtUsername;
@@ -125,7 +124,6 @@ public class SignupActivity extends AppCompatActivity {
 
                             // Start ChatActivity
                             startActivity(new Intent(SignupActivity.this, MenuActivity.class));
-                            success = true;
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
