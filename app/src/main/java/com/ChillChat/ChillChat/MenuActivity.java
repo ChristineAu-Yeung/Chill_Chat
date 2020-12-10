@@ -135,8 +135,10 @@ public class MenuActivity extends AppCompatActivity {
             builder.setMessage("Are you sure you want to change groups?")
                     .setTitle("Attention")
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
                         public void onClick(DialogInterface dialog, int id) {
                             //Call the function to place user in a new randomized group
+
                             DatabaseService.randomizeGroup(getApplicationContext());
                         }
                     })
