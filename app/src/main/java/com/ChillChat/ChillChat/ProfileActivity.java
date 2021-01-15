@@ -17,7 +17,6 @@ import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 public class ProfileActivity extends AppCompatActivity {
 
     protected DatabaseService db = new DatabaseService();
-    private Button editButton;
     private String userID;
 
     /**
@@ -52,7 +51,6 @@ public class ProfileActivity extends AppCompatActivity {
         finish();
     }
 
-
     /**
      * Event listener for the report Button on screen.
      * Asks the user if they want to report the user then adds reported user to table
@@ -64,8 +62,8 @@ public class ProfileActivity extends AppCompatActivity {
                 .setTitle("Attention")
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //Open shared preference from file location and open editor
-                        //Need to add userID to reportedUser table
+                        DatabaseService db = new DatabaseService();
+                        db.reportUser(userID, db.getUID(), "User does not follow guidelines set in TOS");
                         Toast.makeText(ProfileActivity.this, "User reported!", Toast.LENGTH_LONG).show();
                         finish();
                     }
@@ -77,8 +75,6 @@ public class ProfileActivity extends AppCompatActivity {
                 })
                 .show();
     }
-
-
 
     /**
      * This function gets the profile data from the cloud firestore.

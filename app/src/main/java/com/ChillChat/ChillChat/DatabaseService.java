@@ -55,6 +55,7 @@ public class DatabaseService {
     // lot of code to access the same collection over and over again
     final CollectionReference userCollection = db.collection("users");
     final CollectionReference groupCollection = db.collection("groups");
+    final CollectionReference reportedCollection = db.collection("reported");
 
     /**
      * Helper Function, this is a helper method that should stay private to this class
@@ -571,5 +572,20 @@ public class DatabaseService {
         return user.getUid();
     }
 
-
+    /**
+     * reportUser will update the report table with the user that is report, user reporting,
+     * message associated with report, and Timestamp of report
+     *
+     * @param toUserId    User getting reported
+     * @param fromUserId  User who reported
+     * @param message     Message associated with report
+     */
+    public void reportUser(String toUserId, String fromUserId, String message) {
+        Map<String, Object> report = new HashMap<>();
+        report.put("toUserId", toUserId);
+        report.put("fromUserId", fromUserId);
+        report.put("message", message);
+        report.put("dateReported", FieldValue.serverTimestamp());
+        reportedCollection.add(report);
+    }
 }
