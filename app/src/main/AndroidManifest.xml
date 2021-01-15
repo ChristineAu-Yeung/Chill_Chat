@@ -17,6 +17,8 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".SignupActivity" />
         <activity android:name=".ProfileActivity" />
+        <activity android:name=".ToSActivity" />
+        <activity android:name=".PrivacyActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
