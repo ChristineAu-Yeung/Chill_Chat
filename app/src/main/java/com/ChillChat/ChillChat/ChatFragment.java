@@ -150,7 +150,7 @@ public class ChatFragment extends Fragment {
 
         //Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(chatContext, "ChillChat")
-                .setSmallIcon(R.drawable.ic_chat)
+                .setSmallIcon(R.drawable.ic_logo_noti)
                 .setContentTitle("New Message")
                 .setContentText("The chat is waiting for you!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
