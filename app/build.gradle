@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.android.gms:play-services-basement:17.5.0'
+    implementation "com.android.support:support-compat:28.0.0" //Note this is fine, leave as is
 }

@@ -382,6 +382,9 @@ public class DatabaseService {
                                         Log.d(TAG, "New message detected and being added to message array");
                                         ChatFragment.chatMessages.add(incomingMessage);
                                         ChatFragment.externallyCallDatasetChanged();
+
+                                        //Want to try and add notification only if app is not open
+                                        ChatFragment.externallyCallAddNotification();
                                     }
                                 }
 
