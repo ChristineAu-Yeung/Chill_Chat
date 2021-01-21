@@ -1,6 +1,8 @@
 package com.ChillChat.ChillChat;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -143,26 +145,35 @@ public class ChatFragment extends Fragment {
      * Creates a notification when a new message is fetched
      */
     public static void externallyCallAddNotification() {
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(chatContext, MenuActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(chatContext, 0, intent, 0);
+        //Get the currently open app
+        ActivityManager am = (ActivityManager) chatContext
+                .getSystemService(Activity.ACTIVITY_SERVICE);
+        String packageName = am.getRunningTasks(1).get(0).topActivity
+                .getPackageName();
 
-        //Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(chatContext, "ChillChat")
-                .setSmallIcon(R.drawable.ic_logo_noti)
-                .setContentTitle("New Message")
-                .setContentText("The chat is waiting for you!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                // Set the intent that will fire when the user taps the notification
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
+        //If the currently open app is not ChillChat send notification about new message
+        if (!packageName.equals("com.ChillChat.ChillChat")) {
+            // Create an explicit intent for an Activity in your app
+            Intent intent = new Intent(chatContext, MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(chatContext, 0, intent, 0);
 
-        //Show the notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(chatContext);
+            //Build the notification
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(chatContext, "ChillChat")
+                    .setSmallIcon(R.drawable.ic_logo_noti)
+                    .setContentTitle("New Message")
+                    .setContentText("The chat is waiting for you!")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    // Set the intent that will fire when the user taps the notification
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
 
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(0, builder.build());
+            //Show the notification
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(chatContext);
+
+            // notificationId is a unique int for each notification that you must define
+            notificationManager.notify(0, builder.build());
+        }
     }
 
     private void createNotificationChannel() {
