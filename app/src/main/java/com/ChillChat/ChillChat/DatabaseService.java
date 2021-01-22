@@ -166,6 +166,12 @@ public class DatabaseService {
      */
 
     public void setProfileData(String firstName, long age, String biography, String profileImage) {
+        //Update the Display Name to name on profile
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(firstName).build();
+        fUser.updateProfile(profileUpdates);
+
+        //Map all parameters to user object
         Map<String, Object> user = new HashMap<>();
         user.put("firstName", firstName);
         user.put("dateRegistered", FieldValue.serverTimestamp());
@@ -384,7 +390,7 @@ public class DatabaseService {
                                         ChatFragment.externallyCallDatasetChanged();
 
                                         //Want to try and add notification only if app is not open
-                                        ChatFragment.externallyCallAddNotification();
+                                        ChatFragment.externallyCallAddNotification(incomingMessage.firstName, incomingMessage.message);
                                     }
                                 }
 

@@ -51,7 +51,11 @@ public class ChatFragment extends Fragment {
         final DatabaseService db = new DatabaseService();
 
         // Gets all the messages and keeps getting em
-        checkChat(getContext(), db);
+        //checkChat(getContext(), db);
+
+        //Start notification service to get messages in background
+        Intent intent = new Intent(getContext(), NotificationService.class);
+        getContext().startService(intent);
 
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
@@ -144,7 +148,7 @@ public class ChatFragment extends Fragment {
     /**
      * Creates a notification when a new message is fetched
      */
-    public static void externallyCallAddNotification() {
+    public static void externallyCallAddNotification(String fName, String message) {
         //Get the currently open app
         ActivityManager am = (ActivityManager) chatContext
                 .getSystemService(Activity.ACTIVITY_SERVICE);
@@ -158,11 +162,15 @@ public class ChatFragment extends Fragment {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(chatContext, 0, intent, 0);
 
+            //Strip the message to 70 characters max
+            String nMessage = message;
+            nMessage = nMessage.substring(0, Math.min(nMessage.length(), 70));
+
             //Build the notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(chatContext, "ChillChat")
                     .setSmallIcon(R.drawable.ic_logo_noti)
-                    .setContentTitle("New Message")
-                    .setContentText("The chat is waiting for you!")
+                    .setContentTitle(fName)
+                    .setContentText(nMessage)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     // Set the intent that will fire when the user taps the notification
                     .setContentIntent(pendingIntent)

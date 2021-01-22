@@ -21,6 +21,7 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ToSActivity" />
         <activity android:name=".PrivacyActivity" />
+        <service android:name=".NotificationService" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
