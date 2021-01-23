@@ -37,7 +37,6 @@ public class ChatFragment extends Fragment {
     protected static final String FILE_NAME = "CurrentUser";
     private static final String TAG = "ChatFragment";
 
-    private static Context chatContext;
     ListView chatListView;
     EditText chatEditText;
     Button sendButton;
@@ -50,10 +49,10 @@ public class ChatFragment extends Fragment {
 
         final DatabaseService db = new DatabaseService();
 
-        // Gets all the messages and keeps getting em
-        //checkChat(getContext(), db);
+        //Checks for the messages and adds them to chatMessages
+        checkChat(getContext(), db);
 
-        //Start notification service to get messages in background
+        //Start notification service to check for messages in background
         Intent intent = new Intent(getContext(), NotificationService.class);
         getContext().startService(intent);
 
@@ -64,10 +63,6 @@ public class ChatFragment extends Fragment {
         chatMessages = new ArrayList<>();
         messageAdapter = new ChatAdapter(this.getActivity());
         chatListView.setAdapter(messageAdapter);
-
-        //Used for static context in externallyCallAddNotification
-        chatContext = getActivity();
-        createNotificationChannel();
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,61 +140,6 @@ public class ChatFragment extends Fragment {
         Log.i(TAG, "Externally called notifyDataSetChanged()");
     }
 
-    /**
-     * Creates a notification when a new message is fetched
-     */
-    public static void externallyCallAddNotification(String fName, String message) {
-        //Get the currently open app
-        ActivityManager am = (ActivityManager) chatContext
-                .getSystemService(Activity.ACTIVITY_SERVICE);
-        String packageName = am.getRunningTasks(1).get(0).topActivity
-                .getPackageName();
-
-        //If the currently open app is not ChillChat send notification about new message
-        if (!packageName.equals("com.ChillChat.ChillChat")) {
-            // Create an explicit intent for an Activity in your app
-            Intent intent = new Intent(chatContext, MenuActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(chatContext, 0, intent, 0);
-
-            //Strip the message to 70 characters max
-            String nMessage = message;
-            nMessage = nMessage.substring(0, Math.min(nMessage.length(), 70));
-
-            //Build the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(chatContext, "ChillChat")
-                    .setSmallIcon(R.drawable.ic_logo_noti)
-                    .setContentTitle(fName)
-                    .setContentText(nMessage)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    // Set the intent that will fire when the user taps the notification
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
-
-            //Show the notification
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(chatContext);
-
-            // notificationId is a unique int for each notification that you must define
-            notificationManager.notify(0, builder.build());
-        }
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "ChillChat";
-            String description = "Chill Chat Notification";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("ChillChat", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = chatContext.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
     private class ChatAdapter extends ArrayAdapter<String> {
         public ChatAdapter(Context context) {
             super(context, 0);
@@ -241,17 +181,12 @@ public class ChatFragment extends Fragment {
                 userPic = result.findViewById(R.id.incUser);
             }
 
-//            //Get the Image URL from the database and use the Picaasso plugin to set icon
-//            db.getUserDataHelper(chatObject.userID);
-            //Try to do everything in this function
+            //Get the user data from database
             DatabaseService.getUserData(chatObject.userID, result, userPic);
-
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position
 
             return result;
         }
     }
-
-
 }
