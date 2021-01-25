@@ -1,18 +1,23 @@
 package com.ChillChat.ChillChat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static android.graphics.Color.parseColor;
+import static com.ChillChat.ChillChat.DatabaseService.deleteAnonymousUser;
 
 public class ProfileActivity extends AppCompatActivity {
 
     protected DatabaseService db = new DatabaseService();
-    private Button editButton;
+    private String userID;
 
     /**
      * Runs when onCreate() state is called.
@@ -30,7 +35,7 @@ public class ProfileActivity extends AppCompatActivity {
         findViewById(R.id.bioEditText);
 
         Intent intent = getIntent();
-        String userID = intent.getStringExtra("userID");
+        userID = intent.getStringExtra("userID");
         if(!userID.equals("")) {
             GetProfile(userID);
         } else {
@@ -44,6 +49,31 @@ public class ProfileActivity extends AppCompatActivity {
      */
     public void goBack(View view) {
         finish();
+    }
+
+    /**
+     * Event listener for the report Button on screen.
+     * Asks the user if they want to report the user then adds reported user to table
+     * for manual review and potential ban
+     */
+    public void reportUser(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setMessage("Would you like to report this user?")
+                .setTitle("Attention")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        DatabaseService db = new DatabaseService();
+                        db.reportUser(userID, db.getUID(), "User does not follow guidelines set in TOS");
+                        Toast.makeText(ProfileActivity.this, "User reported!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //Do nothing
+                    }
+                })
+                .show();
     }
 
     /**

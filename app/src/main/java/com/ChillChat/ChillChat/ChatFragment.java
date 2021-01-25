@@ -1,9 +1,15 @@
 package com.ChillChat.ChillChat;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -41,9 +49,20 @@ public class ChatFragment extends Fragment {
 
         final DatabaseService db = new DatabaseService();
 
-        // Gets all the messages and keeps getting em
+        //Checks for the messages and adds them to chatMessages
         checkChat(getContext(), db);
 
+        //Start notification service to check for messages in background
+        Intent intent = new Intent(getContext(), NotificationService.class);
+        getContext().startService(intent);
+
+        //Set the user's current timestamp
+        String userID = db.getUID();
+        db.setUserTimestamp(userID);
+        //This can eventually be moved for more eficency
+        db.setUserGroup(userID, getContext());
+
+        //Layout elements
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);
@@ -51,7 +70,6 @@ public class ChatFragment extends Fragment {
         chatMessages = new ArrayList<>();
         messageAdapter = new ChatAdapter(this.getActivity());
         chatListView.setAdapter(messageAdapter);
-
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,8 +80,6 @@ public class ChatFragment extends Fragment {
                 // If len > 0, add to chatMessages and notify the message adapter.
                 // Empty the EditText
                 if (text.trim().length() > 0 && text.trim().length() == 0) {
-
-                    //Shits not working
                     //Toast toast = Toast.makeText(ChatFragment.this, "Empty text try again", Toast.LENGTH_SHORT);
                     //toast.show();
 
@@ -102,7 +118,6 @@ public class ChatFragment extends Fragment {
     }
 
     public static void checkChat(Context ctx, DatabaseService db) {
-
         db.getMessageHelper(ctx);
     }
 
@@ -173,17 +188,12 @@ public class ChatFragment extends Fragment {
                 userPic = result.findViewById(R.id.incUser);
             }
 
-//            //Get the Image URL from the database and use the Picaasso plugin to set icon
-//            db.getUserDataHelper(chatObject.userID);
-            //Try to do everything in this function
+            //Get the user data from database
             DatabaseService.getUserData(chatObject.userID, result, userPic);
-
             TextView message = result.findViewById(R.id.message_text);
             message.setText(getItem(position));  // get str at position
 
             return result;
         }
     }
-
-
 }

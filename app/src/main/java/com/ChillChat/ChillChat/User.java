@@ -8,23 +8,16 @@ import java.util.Date;
 
 public class User {
     private Date dateRegistered;
-    private String email;
     private String firstName;
-    private String userID;
     private long age;
     private String bio;
     private String profileImage;
+    private Date latestTime;
+    private String userID;
 
     /**
      * Object that represents each user
      */
-    public User(Date sDateRegistered, String sEmail, String sFirstName, String sUserID) {
-        dateRegistered = sDateRegistered;
-        email = sEmail;
-        firstName = sFirstName;
-        userID = sUserID;
-    }
-
     public User(Date sDateRegistered, String sFirstName, long sAge, String sBio, String pImage) {
         dateRegistered = sDateRegistered;
         firstName = sFirstName;
@@ -33,20 +26,22 @@ public class User {
         profileImage = pImage;
     }
 
+    public User(Date sDateRegistered, String sFirstName, long sAge, String sBio, String pImage, Date lTime, String uID) {
+        dateRegistered = sDateRegistered;
+        firstName = sFirstName;
+        age = sAge;
+        bio = sBio;
+        profileImage = pImage;
+        latestTime = lTime;
+        userID = uID;
+    }
+
     public Date getDateRegistered() {
         return dateRegistered;
     }
 
-    public String getEmail() {
-        return userID;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public String getUserID() {
-        return userID;
     }
 
     public String getBio() {
@@ -62,5 +57,13 @@ public class User {
         byte[] decodedString = Base64.decode(profileImage, Base64.URL_SAFE);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
+    }
+
+    public Date getLatestTime() {
+        return latestTime;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 }

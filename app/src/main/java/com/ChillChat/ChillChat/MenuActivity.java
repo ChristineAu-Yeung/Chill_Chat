@@ -49,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_profile, R.id.nav_about, R.id.nav_logout)
+                R.id.nav_home, R.id.nav_groupList, R.id.nav_profile, R.id.nav_about, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -123,7 +123,8 @@ public class MenuActivity extends AppCompatActivity {
 
                         public void onClick(DialogInterface dialog, int id) {
                             //Call the function to place user in a new randomized group
-                            DatabaseService.randomizeGroup(getApplicationContext());
+                            DatabaseService db = new DatabaseService();
+                            db.randomizeGroup(getApplicationContext());
 
                             Intent intent = getIntent();
                             finish();
