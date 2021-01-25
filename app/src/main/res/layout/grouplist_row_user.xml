@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    app:layout_constrainedWidth="true">
+
+    <LinearLayout
+        android:id="@+id/linLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:orientation="horizontal"
+        app:layout_constrainedWidth="true">
+
+        <ImageView
+            android:id="@+id/userImg"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:layout_weight="0" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:text="TextView"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linLayout"
+        android:orientation="horizontal"
+        android:paddingLeft="3dp"
+        app:layout_constrainedWidth="true">
+
+        <ImageView
+            android:id="@+id/statusImage"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:paddingTop="3dp"
+            android:src="@drawable/ic_offline"
+            android:layout_weight="0" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:paddingStart="2dp"
+            android:paddingTop="3dp"
+            android:text="Offline"
+            android:textColor="#000000"
+            android:textSize="8sp" />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

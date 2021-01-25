@@ -56,6 +56,13 @@ public class ChatFragment extends Fragment {
         Intent intent = new Intent(getContext(), NotificationService.class);
         getContext().startService(intent);
 
+        //Set the user's current timestamp
+        String userID = db.getUID();
+        db.setUserTimestamp(userID);
+        //This can eventually be moved for more eficency
+        db.setUserGroup(userID, getContext());
+
+        //Layout elements
         chatListView = root.findViewById(R.id.chatListView);
         chatEditText = root.findViewById(R.id.chatEditText);
         sendButton = root.findViewById(R.id.sendButton);

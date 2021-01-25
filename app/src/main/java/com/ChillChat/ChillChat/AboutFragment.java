@@ -24,6 +24,11 @@ public class AboutFragment extends Fragment {
         Button btnTOS = (Button) root.findViewById(R.id.btnTOS);
         Button btnPP = (Button) root.findViewById(R.id.btnPP);
 
+        //Set the user's current timestamp
+        DatabaseService db = new DatabaseService();
+        String userID = db.getUID();
+        db.setUserTimestamp(userID);
+
         //Button listener for btnTOS
         btnTOS.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -31,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -229,7 +230,7 @@ public class DatabaseService {
         DatabaseService db = new DatabaseService();
 
         //Function that gets userID already
-        if (user.isAnonymous()) {
+        if ("Anonymous".equals(user.getDisplayName())) {
             user.delete();
             db.deleteUserData(getUID());
         }
@@ -437,7 +438,7 @@ public class DatabaseService {
      * @param context The current context of the app
      */
     public static void randomizeGroup(final Context context) {
-        DatabaseService db = new DatabaseService();
+        final DatabaseService db = new DatabaseService();
         final ArrayList<String> documentID = new ArrayList<>();
 
         db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -463,6 +464,7 @@ public class DatabaseService {
                     ChatFragment.chatMessages.clear();
                     ChatFragment.checkChat(context, new DatabaseService());
 
+                    db.setUserGroup(db.getUID(), context);
                 } else {
                     Log.w(TAG, "randomizeGroup: Unable to query group documents");
                 }
@@ -593,5 +595,103 @@ public class DatabaseService {
         report.put("message", message);
         report.put("dateReported", FieldValue.serverTimestamp());
         reportedCollection.add(report);
+    }
+
+    /**
+     * Starts the process of getting group list of users.
+     * This portion gets the group document ID from the database that the user is in.
+     * @param context - context from GroupListFragment
+     */
+    public void getGroupList(Context context) {
+        //First get the group # from the shared preferences
+        SharedPreferences prefs = context.getSharedPreferences("CurrentUser", MODE_PRIVATE);
+        final Integer groupNumber = prefs.getInt("groupNumber", 0);
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        //Get the groupDocumentString from database based on group # int
+        groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+
+                    }
+                    //get the user list that is associated with retrieved from DB
+                    getUserList(documentID.get(groupNumber));
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets a list of users that are in the same group that is passed in.
+     * @param groupDocumentString - the group document ID associated with logged in user
+     */
+    private void getUserList(String groupDocumentString) {
+        userCollection.whereEqualTo("groupID", groupDocumentString)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Retrieved User's");
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                User user = new User(document.getDate("dateRegistered"), (String) document.get("firstName"),
+                                        (long) document.get("age"), (String) document.get("biography"), document.getString("profileImage"),
+                                        document.getDate("latestTime"), document.getId());
+                                if (!GroupListFragment.userList.contains(user)) {
+                                    Log.d(TAG, "New user detected and being added to user list");
+                                    GroupListFragment.userList.add(user);
+                                    GroupListFragment.externallyCallDatasetChanged();
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Updates a timestamp of the last time the user has logged in
+     * @param userId - the logged in userID
+     */
+    public void setUserTimestamp(String userId) {
+        Map<String, Object> report = new HashMap<>();
+        report.put("latestTime", FieldValue.serverTimestamp());
+        userCollection.document(userId).update(report);
+    }
+
+    /**
+     * Updates the groupID that the user is currently in
+     * @param userId - the logged in userID
+     * @param context - the application context
+     */
+    public void setUserGroup(final String userId, Context context) {
+        //First get the group # from the shared preferences
+        SharedPreferences prefs = context.getSharedPreferences("CurrentUser", MODE_PRIVATE);
+        final Integer groupNumber = prefs.getInt("groupNumber", 0);
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        //Get the groupDocumentString from database based on group # int
+        groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    // set the user's current groupID
+                    Map<String, Object> report = new HashMap<>();
+                    report.put("groupID", documentID.get(groupNumber));
+                    userCollection.document(userId).update(report);
+                } else {
+                    Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
     }
 }

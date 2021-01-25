@@ -63,27 +63,36 @@ public class ProfileFragment extends Fragment {
         age = (EditText) root.findViewById(R.id.ageEditText);
         bio = (EditText) root.findViewById(R.id.bioEditText);
 
+        //Set the user's current timestamp
+        DatabaseService db = new DatabaseService();
+        String userID = db.getUID();
+        db.setUserTimestamp(userID);
+
         //pulls profile data
         GetProfile();
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Sets the profileImage Bitmap to allow for profile updates without image swap.
-                //Todo - Need to fix the recycle bitmap issue
-                Bitmap pImage = null;
-                BitmapDrawable drawable = (BitmapDrawable) profileImageButton.getDrawable();
-                pImage = drawable.getBitmap();
-                //Continue normal process
-                Log.i(TAG, "updated user collection");
-                String ageString = age.getText().toString();
-                long ageNum = Long.parseLong(ageString);
-                String imageB64 = getImageData(pImage);
-                if(imageB64.length() * 2 < 1200000) {
-                    SetProfile(name.getText().toString(), ageNum, bio.getText().toString(), imageB64);
-                    Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+                if (name.getText().toString().equals("Anonymous")) {
+                    Toast.makeText(getContext(), "Name can't be 'Anonymous'!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "The file you selected is too large!", Toast.LENGTH_SHORT).show();
+                    //Sets the profileImage Bitmap to allow for profile updates without image swap.
+                    //Todo - Need to fix the recycle bitmap issue
+                    Bitmap pImage = null;
+                    BitmapDrawable drawable = (BitmapDrawable) profileImageButton.getDrawable();
+                    pImage = drawable.getBitmap();
+                    //Continue normal process
+                    Log.i(TAG, "updated user collection");
+                    String ageString = age.getText().toString();
+                    long ageNum = Long.parseLong(ageString);
+                    String imageB64 = getImageData(pImage);
+                    if (imageB64.length() * 2 < 1200000) {
+                        SetProfile(name.getText().toString(), ageNum, bio.getText().toString(), imageB64);
+                        Toast.makeText(getContext(), "Profile updated!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "The file you selected is too large!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });

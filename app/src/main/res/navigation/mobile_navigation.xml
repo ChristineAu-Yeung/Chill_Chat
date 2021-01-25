@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_chat" />
 
     <fragment
+        android:id="@+id/nav_groupList"
+        android:name="com.ChillChat.ChillChat.GroupListFragment"
+        android:label="@string/grouplist"
+        tools:layout="@layout/fragment_grouplist" />
+
+    <fragment
         android:id="@+id/nav_profile"
         android:name="com.ChillChat.ChillChat.ProfileFragment"
         android:label="@string/profile_home"
