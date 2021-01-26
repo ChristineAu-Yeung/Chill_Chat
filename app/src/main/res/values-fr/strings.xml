@@ -31,7 +31,7 @@
         5) Pour modifier les informations de votre profil, accédez au profil et remplissez les zones de texte, puis cliquez sur l\'icône en forme de crayon. \n
         6) Pour changer votre photo de profil, allez dans le profil et cliquez sur l\'image. Sélectionnez une photo inférieure à 1 Mo, puis cliquez sur \'icône en forme de crayon.</string>
     <string name="authors">Brian Chan, Christine Au-yeung, Michael Tran, \n Ryan Polkiewicz, Sathusan Kandasamy</string>
-    <string name="version">Version 1.3 \n January 20, 2021</string>
+    <string name="version">Version 1.4 - January 25, 2021</string>
     <string name="anonymous">Anonyme</string>
     <string name="TOS"></string>
     <string name="Privacy"></string>

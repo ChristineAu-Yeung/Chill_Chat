@@ -13,6 +13,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:divider="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
         android:dividerHeight="10dp"
         android:transcriptMode="alwaysScroll"></ListView>
 
