@@ -78,7 +78,6 @@ public class ProfileFragment extends Fragment {
                     Toast.makeText(getContext(), "Name can't be 'Anonymous'!", Toast.LENGTH_SHORT).show();
                 } else {
                     //Sets the profileImage Bitmap to allow for profile updates without image swap.
-                    //Todo - Need to fix the recycle bitmap issue
                     Bitmap pImage = null;
                     BitmapDrawable drawable = (BitmapDrawable) profileImageButton.getDrawable();
                     pImage = drawable.getBitmap();
@@ -149,7 +148,6 @@ public class ProfileFragment extends Fragment {
     public String getImageData(Bitmap bmp) {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
-        bmp.recycle();
         byte[] byteArray = bao.toByteArray();
         String imageB64 = Base64.encodeToString(byteArray, Base64.URL_SAFE);
         return imageB64;

@@ -9,6 +9,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,13 +24,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.FieldValue;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
+import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -91,7 +98,8 @@ public class ChatFragment extends Fragment {
                             DatabaseService.getDisplayName(),
                             DatabaseService.getGroupNumber(getContext()),
                             null, // NULL because we want to generate a new ID
-                            DatabaseService.getUID());
+                            DatabaseService.getUID(),
+                            new Date());
                     chatMessages.add(message);
                     db.sendMessageHelper(message);
 
@@ -111,6 +119,19 @@ public class ChatFragment extends Fragment {
                     intent.putExtra("userID", chatObject.userID);
                     startActivity(intent);
                 }
+            }
+        });
+
+        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id){
+                //Get chatObject at position
+                ChatMessage chatObject = chatMessages.get(position);
+                //Open MessageDialog with chatObject returned
+                MessageDialog md =new MessageDialog(getActivity(), chatObject);
+                md.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                md.show();
+                return true;
             }
         });
 
