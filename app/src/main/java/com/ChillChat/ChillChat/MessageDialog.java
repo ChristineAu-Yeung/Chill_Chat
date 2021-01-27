@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Window;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +25,15 @@ public class MessageDialog extends Dialog {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.message_dialog);
+
+        //Set the background to be blue or grey based on sent message
+        RelativeLayout rLay = findViewById(R.id.relLayout);
+        DatabaseService db = new DatabaseService();
+        if (cMessage.userID.equals(db.getUID())) {
+            rLay.setBackgroundResource(R.drawable.dialog_rectangle_blue);
+        } else {
+            rLay.setBackgroundResource(R.drawable.dialog_rectangle_grey);
+        }
 
         //Set users first name
         TextView name = findViewById(R.id.name);
