@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_one"
-        android:icon="@android:drawable/ic_media_ff"
+        android:icon="@drawable/ic_next"
         android:orderInCategory="1"
         android:title="Choice 1"
         app:showAsAction="always" />
