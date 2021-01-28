@@ -2,6 +2,7 @@ package com.ChillChat.ChillChat;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 public class GroupsListFragment extends Fragment {
@@ -46,17 +48,30 @@ public class GroupsListFragment extends Fragment {
         groupsAdapter = new GroupsAdapter(this.getActivity());
         groupsListView.setAdapter(groupsAdapter);
 
-//        groupsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String groupID = groupsList.get(position);
-//                if (!userObject.getUserID().equals(DatabaseService.getUID())) {
-//                    Intent intent = new Intent(getActivity(), ProfileActivity.class);
-//                    intent.putExtra("userID", userObject.getUserID());
-//                    startActivity(intent);
-//                }
-//            }
-//        });
+        groupsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String groupID = groupsList.get(position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Would you like to change to Group " + (position+1) + "?")
+                    .setTitle("Group Change")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int id) {
+                            //Call the function to place user in a new randomized group
+                            DatabaseService db = new DatabaseService();
+                            //Need to switch groups
+                            //db.randomizeGroup(getContext());
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    })
+                    .show();
+            }
+        });
 
         return root;
     }

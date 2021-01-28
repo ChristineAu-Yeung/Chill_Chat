@@ -118,7 +118,7 @@ public class MenuActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_one) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
             builder.setMessage("Are you sure you want to change groups?")
-                    .setTitle("Attention")
+                    .setTitle("Group Change")
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int id) {
@@ -137,7 +137,7 @@ public class MenuActivity extends AppCompatActivity {
                         }
                     })
                     .show();
-            Log.i("Test", "User tapped the rng button");
+            Log.i("MenuActivity", "User tapped the rng button");
 
             return true;
         }
