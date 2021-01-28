@@ -15,7 +15,6 @@ public class ChatMessage {
     String messageID;
     String userID;
     Date messageSent;
-
     int groupNumber;
 
 //        String imageUrl; // For the future

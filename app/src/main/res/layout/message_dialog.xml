@@ -18,37 +18,48 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:text="Name"
             android:textColor="@android:color/white"
-            android:textSize="14dp"/>
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/messageSent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
+            android:gravity="end"
             android:text="Date"
             android:textColor="@android:color/white"
-            android:textSize="14dp"/>
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_below="@id/linLayout"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/message"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:gravity="left"
             android:text="Message"
             android:textColor="@android:color/white"
             android:textSize="14dp"/>
+
+        <Button
+            android:id="@+id/copy"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Copy"
+            android:textAllCaps="false" />
     </LinearLayout>
 </RelativeLayout>

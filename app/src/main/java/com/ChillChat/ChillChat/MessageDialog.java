@@ -2,15 +2,19 @@ package com.ChillChat.ChillChat;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MessageDialog extends Dialog {
+public class MessageDialog extends Dialog implements android.view.View.OnClickListener {
     public Activity c;
     ChatMessage cMessage;
 
@@ -46,6 +50,27 @@ public class MessageDialog extends Dialog {
         //Set users message
         TextView message = findViewById(R.id.message);
         message.setText(cMessage.message);
+        //Set click listener for copy button
+        Button copy = findViewById(R.id.copy);
+        copy.setOnClickListener(this);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.copy:
+                //Get text from the view
+                TextView message = findViewById(R.id.message);
+                String result = message.getText().toString();
+                //Copy the message to the clipboard
+                ClipboardManager clipboard = (ClipboardManager) c.getSystemService(c.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Message", result);
+                clipboard.setPrimaryClip(clip);
+                break;
+            default:
+                break;
+        }
+        //Dismiss the dialog
+        dismiss();
+    }
 }
