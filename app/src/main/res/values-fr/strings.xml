@@ -21,6 +21,7 @@
     <string name="logout_home">Se déconnecter</string>
     <string name="aboutUs">À propos de nous</string>
     <string name="grouplist">Group</string>
+    <string name="groupslist">Groups</string>
     <string name="about_us">Chill Chat est une application de communication sociale qui connecte des personnes aléatoires dans des discussions de groupe où elles ont la possibilité de sauter des groupes jusqu\'à ce qu\'elles trouvent
         celui qui les intéresse. Les utilisateurs peuvent décider s\'ils souhaitent rester anonymes ou créer un compte.</string>
     <string name="instructions">Vous trouverez ci-dessous les instructions \'utilisation de Chill Chat: \n

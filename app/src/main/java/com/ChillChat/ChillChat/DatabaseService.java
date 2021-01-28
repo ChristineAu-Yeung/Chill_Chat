@@ -645,7 +645,7 @@ public class DatabaseService {
      * @param groupDocumentString - the group document ID associated with logged in user
      */
     private void getUserList(String groupDocumentString) {
-        userCollection.whereEqualTo("groupID", groupDocumentString).orderBy("firstName", Query.Direction.DESCENDING)
+        userCollection.whereEqualTo("groupID", groupDocumentString).orderBy("firstName", Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -707,5 +707,78 @@ public class DatabaseService {
                 }
             }
         });
+    }
+
+    /**
+     * Gets the list of group  from Firestore and sets it on GroupsListFragment in groupsList array
+     */
+    public void getGroupsList() {
+        //Get the groupDocumentString from database based on group # int
+        groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Retrieved User's");
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String groupID = document.getId();
+                        if (!GroupsListFragment.groupsList.contains(groupID)) {
+                            Log.d(TAG, "New user detected and being added to user list");
+                            GroupsListFragment.groupsList.add(groupID);
+                            GroupsListFragment.externallyCallDatasetChanged();
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets and sets the amount of messages/users in a provided group
+     * @param groupID - the groupID for provided row
+     * @param row - the given row view
+     */
+    public void getGroupCounts(String groupID, final View row) {
+        //Get the amount of messages in given group
+        DocumentReference groupRef = groupCollection.document(groupID);
+        groupRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "Retrieved messages");
+                        ArrayList<HashMap<String, Object>> messages = (ArrayList<HashMap<String, Object>>) document.get("messages");
+                        //Set the amount of messages within the group on row provided
+                        TextView messageCount = row.findViewById(R.id.messageCount);
+                        Integer size = messages.size();
+                        messageCount.setText(size.toString());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "Get failed with ", task.getException());
+                }
+            }
+        });
+
+        //Get the amount of users in given group
+        userCollection.whereEqualTo("groupID", groupID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Retrieved user's");
+                            //Set the amount of users within the group on row provided
+                            TextView memberCount = row.findViewById(R.id.memberCount);
+                            Integer size = task.getResult().size();
+                            memberCount.setText(size.toString());
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 }

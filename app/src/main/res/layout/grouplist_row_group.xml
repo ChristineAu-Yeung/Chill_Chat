@@ -10,19 +10,62 @@
         android:id="@+id/linLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:layout_margin="5dp"
         android:orientation="horizontal"
         app:layout_constrainedWidth="true">
 
         <TextView
-            android:id="@+id/group_name"
+            android:id="@+id/groupNumber"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:text="Group"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:layout_weight="0"
+            android:gravity="end"
+            android:src="@drawable/ic_person"/>
+
+        <TextView
+            android:id="@+id/memberCount"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:layout_weight="0"
+            android:gravity="end"
+            android:src="@drawable/ic_chat"/>
+
+        <TextView
+            android:id="@+id/messageCount"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
             android:paddingEnd="10dp"
-            android:text="TextView"
+            android:text=""
             android:textColor="#000000"
             android:textSize="15sp" />
     </LinearLayout>

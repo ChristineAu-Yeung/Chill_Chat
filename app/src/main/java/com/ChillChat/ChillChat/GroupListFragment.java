@@ -31,7 +31,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class GroupListFragment extends Fragment {
     //Variable for SharedPreference
-    private static final String TAG = "ChatFragment";
+    private static final String TAG = "GroupListFragment";
 
     private static final String defaultImage = "https://static.thenounproject.com/png/3246632-200.png";
     private static final String userImage = "https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png";
