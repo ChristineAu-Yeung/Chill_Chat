@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:orientation="vertical">
 
     <ListView
         android:id="@+id/groupsListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:divider="@android:color/transparent"
         android:listSelector="@android:color/transparent"
         android:dividerHeight="10dp"
         android:transcriptMode="alwaysScroll"></ListView>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/randGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Random Group"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/newGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="New Group "
+        android:enabled="false"
+        android:textAllCaps="false" />
+
+</LinearLayout>

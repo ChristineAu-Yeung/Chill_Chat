@@ -114,37 +114,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_one) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
-            builder.setMessage("Are you sure you want to change groups?")
-                    .setTitle("Group Change")
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int id) {
-                            //Call the function to place user in a new randomized group
-                            DatabaseService db = new DatabaseService();
-                            db.randomizeGroup(getApplicationContext());
-
-                            Intent intent = getIntent();
-                            finish();
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                        }
-                    })
-                    .show();
-            Log.i("MenuActivity", "User tapped the rng button");
-
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)

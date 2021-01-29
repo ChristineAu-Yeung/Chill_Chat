@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,6 +52,7 @@ public class GroupsListFragment extends Fragment {
         groupsAdapter = new GroupsAdapter(this.getActivity());
         groupsListView.setAdapter(groupsAdapter);
 
+        //On Item click listener for selected group
         groupsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -76,6 +78,34 @@ public class GroupsListFragment extends Fragment {
                 }
             }
         });
+
+        //On click listener for random group button
+        Button randGroup = root.findViewById(R.id.randGroup);
+        randGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure you want to change groups?")
+                        .setTitle("Group Change")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int id) {
+                                //Call the function to place user in a new randomized group
+                                DatabaseService db = new DatabaseService();
+                                db.randomizeGroup(getContext());
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        })
+                        .show();
+                Log.i("MenuActivity", "User tapped the rng button");
+            }
+        });
+
+        //On click listener for random group button
+        //Button newGroup = root.findViewById(R.id.newGroup);
 
         return root;
     }

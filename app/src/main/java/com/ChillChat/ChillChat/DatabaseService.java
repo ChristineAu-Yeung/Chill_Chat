@@ -448,7 +448,6 @@ public class DatabaseService {
 
     /**
      * This function randomizes the group that the user is in.
-     *
      * @param context The current context of the app
      */
     public static void randomizeGroup(final Context context) {
@@ -470,15 +469,12 @@ public class DatabaseService {
                     SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
 
-                    //Edit the group number to be the new one
+                    //Edit the group number to be the new one and set it in database
                     edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
                     edit.apply();
-
                     Log.i(TAG, "Successfully stored new group number");
-                    ChatFragment.chatMessages.clear();
-                    ChatFragment.checkChat(context, new DatabaseService());
-
                     db.setUserGroup(db.getUID(), context);
+                    GroupsListFragment.externallyCallDatasetChanged();
                 } else {
                     Log.w(TAG, "randomizeGroup: Unable to query group documents");
                 }
@@ -802,14 +798,10 @@ public class DatabaseService {
                     SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
 
-                    //Edit the group number to be the new one
+                    //Edit the group number to be the new one and set it to user in DB
                     edit.putInt("groupNumber", position);
                     edit.apply();
-
                     Log.i(TAG, "Successfully stored new group number");
-                    ChatFragment.chatMessages.clear();
-                    ChatFragment.checkChat(context, new DatabaseService());
-
                     db.setUserGroup(db.getUID(), context);
                     GroupsListFragment.externallyCallDatasetChanged();
                 } else {
