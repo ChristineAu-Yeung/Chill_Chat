@@ -781,4 +781,41 @@ public class DatabaseService {
                     }
                 });
     }
+
+    /**
+     * Lets the user select the group that they are in.
+     * @param context The current context of the app
+     * @param position The group number that the person wants to join
+     */
+    public void selectGroup(final Context context, final Integer position) {
+        final DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    // Open shared prefs for writing
+                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+
+                    //Edit the group number to be the new one
+                    edit.putInt("groupNumber", position);
+                    edit.apply();
+
+                    Log.i(TAG, "Successfully stored new group number");
+                    ChatFragment.chatMessages.clear();
+                    ChatFragment.checkChat(context, new DatabaseService());
+
+                    db.setUserGroup(db.getUID(), context);
+                    GroupsListFragment.externallyCallDatasetChanged();
+                } else {
+                    Log.w(TAG, "Unable to query group documents");
+                }
+            }
+        });
+    }
 }

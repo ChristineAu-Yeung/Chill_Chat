@@ -14,6 +14,15 @@
         android:orientation="horizontal"
         app:layout_constrainedWidth="true">
 
+        <ImageView
+            android:id="@+id/currentGroup"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:layout_weight="0"
+            android:src="@drawable/ic_star"/>
+
         <TextView
             android:id="@+id/groupNumber"
             android:layout_width="wrap_content"
