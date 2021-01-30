@@ -19,12 +19,11 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:paddingTop="3dp"
-            android:paddingRight="3dp"
             android:layout_weight="0"
             android:src="@drawable/ic_star"/>
 
         <TextView
-            android:id="@+id/groupNumber"
+            android:id="@+id/groupName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -35,6 +34,16 @@
             android:textColor="#000000"
             android:textSize="15sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/groupLock"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:paddingTop="3dp"
+            android:paddingRight="3dp"
+            android:layout_weight="0"
+            android:gravity="end"
+            android:src="@drawable/ic_lock"/>
 
         <ImageView
             android:layout_width="25dp"
@@ -78,8 +87,4 @@
             android:textColor="#000000"
             android:textSize="15sp" />
     </LinearLayout>
-
-
-
-
 </RelativeLayout>

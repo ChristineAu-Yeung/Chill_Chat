@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -35,7 +36,7 @@ public class GroupsListFragment extends Fragment {
 
     ListView groupsListView;
     static GroupsAdapter groupsAdapter;
-    public static ArrayList<String> groupsList;
+    public static ArrayList<GroupObject> groupsList;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_groupslist, container, false);
@@ -58,23 +59,29 @@ public class GroupsListFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 SharedPreferences prefs = getContext().getSharedPreferences("CurrentUser", MODE_PRIVATE);
                 Integer groupNum = prefs.getInt("groupNumber", 0);
+                GroupObject group = groupsAdapter.getGroup(position);
                 if (position != groupNum) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setMessage("Would you like to change to Group " + (position+1) + "?")
-                        .setTitle("Group Change")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    if (group.getGroupPassword().isEmpty()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setMessage("Would you like to change to " + group.getGroupName() + "?")
+                                .setTitle("Group Change")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
-                            public void onClick(DialogInterface dialog, int id) {
-                                //Call that lets the user select the group that they are in
-                                DatabaseService db = new DatabaseService();
-                                db.selectGroup(getContext(), position);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        })
-                        .show();
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //Call that lets the user select the group that they are in
+                                        DatabaseService db = new DatabaseService();
+                                        db.selectGroup(getContext(), position);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                    }
+                                })
+                                .show();
+                    } else {
+                        //Need to open custom group dialog to enter password
+                        //To make it better, use a custom dialog that will work for both!
+                    }
                 }
             }
         });
@@ -129,8 +136,10 @@ public class GroupsListFragment extends Fragment {
         }
 
         public String getItem(int position) {
-            return groupsList.get(position);
+            return groupsList.get(position).getGroupID();
         }
+
+        public GroupObject getGroup(int position) { return groupsList.get(position); }
 
         //Gets run for each message in the Array
         @SuppressLint("InflateParams")
@@ -146,18 +155,23 @@ public class GroupsListFragment extends Fragment {
             SharedPreferences prefs = getContext().getSharedPreferences("CurrentUser", MODE_PRIVATE);
             Integer groupNum = prefs.getInt("groupNumber", 0);
             if (position != groupNum) {
-                currentGroup.setVisibility(View.GONE);
+                currentGroup.setVisibility(View.INVISIBLE);
+            }
+
+            //Get the group at provided position
+            GroupObject group = getGroup(position);
+            //Check to see if the group is password protected or not
+            ImageView groupLock = result.findViewById(R.id.groupLock);
+            if (group.getGroupPassword().isEmpty()) {
+                groupLock.setVisibility(View.INVISIBLE);
             }
 
             //This sets the group number at position + 1
-            TextView groupNumber = result.findViewById(R.id.groupNumber);
-            groupNumber.setText("Group " + (position + 1));
-
-            //Get the groupID at provided position
-            String groupID = getItem(position);
+            TextView groupName = result.findViewById(R.id.groupName);
+            groupName.setText(group.getGroupName());
             //Get the group member and message counts from DB
             DatabaseService db = new DatabaseService();
-            db.getGroupCounts(groupID, result);
+            db.getGroupCounts(group.getGroupID(), result);
 
             return result;
         }

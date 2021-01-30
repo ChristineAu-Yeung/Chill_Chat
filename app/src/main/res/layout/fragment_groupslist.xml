@@ -24,6 +24,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Random Group"
+        android:textColor="#ffffff"
+        android:backgroundTint="#3f77bc"
         android:textAllCaps="false" />
 
     <Button
@@ -32,6 +34,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="New Group "
+        android:textColor="#ffffff"
+        android:backgroundTint="#3f77bc"
         android:enabled="false"
         android:textAllCaps="false" />
 

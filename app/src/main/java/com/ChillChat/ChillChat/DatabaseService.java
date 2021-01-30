@@ -717,9 +717,12 @@ public class DatabaseService {
                     Log.d(TAG, "Retrieved User's");
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         String groupID = document.getId();
-                        if (!GroupsListFragment.groupsList.contains(groupID)) {
+                        String groupName = document.getString("groupName");
+                        //Need to set the various group object parameters here
+                        GroupObject group = new GroupObject(groupID, groupName, document.getString("groupPass"));
+                        if (!GroupsListFragment.groupsList.contains(group)) {
                             Log.d(TAG, "New user detected and being added to user list");
-                            GroupsListFragment.groupsList.add(groupID);
+                            GroupsListFragment.groupsList.add(group);
                             GroupsListFragment.externallyCallDatasetChanged();
                         }
                     }
