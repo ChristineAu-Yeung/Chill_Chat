@@ -447,42 +447,6 @@ public class DatabaseService {
     }
 
     /**
-     * This function randomizes the group that the user is in.
-     * @param context The current context of the app
-     */
-    public static void randomizeGroup(final Context context) {
-        final DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<>();
-
-        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        documentID.add(document.getId());
-                    }
-
-                    // Run the random function
-                    int random_integer = randomizeGroupHelper(context, documentID.size());
-
-                    // Open shared prefs for writing
-                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                    SharedPreferences.Editor edit = prefs.edit();
-
-                    //Edit the group number to be the new one and set it in database
-                    edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
-                    edit.apply();
-                    Log.i(TAG, "Successfully stored new group number");
-                    db.setUserGroup(db.getUID(), context);
-                    GroupsListFragment.externallyCallDatasetChanged();
-                } else {
-                    Log.w(TAG, "randomizeGroup: Unable to query group documents");
-                }
-            }
-        });
-    }
-
-    /**
      * Helper function that generates the new group number
      *
      * @param context      Current context of the app

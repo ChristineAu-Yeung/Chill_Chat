@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.squareup.picasso.Picasso;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -37,11 +40,12 @@ public class GroupsListFragment extends Fragment {
     ListView groupsListView;
     static GroupsAdapter groupsAdapter;
     public static ArrayList<GroupObject> groupsList;
+    DatabaseService db;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_groupslist, container, false);
 
-        final DatabaseService db = new DatabaseService();
+        db = new DatabaseService();
         //Set the user's current timestamp
         String userID = db.getUID();
         db.setUserTimestamp(userID);
@@ -61,53 +65,37 @@ public class GroupsListFragment extends Fragment {
                 Integer groupNum = prefs.getInt("groupNumber", 0);
                 GroupObject group = groupsAdapter.getGroup(position);
                 if (position != groupNum) {
-                    if (group.getGroupPassword().isEmpty()) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage("Would you like to change to " + group.getGroupName() + "?")
-                                .setTitle("Group Change")
-                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        //Call that lets the user select the group that they are in
-                                        DatabaseService db = new DatabaseService();
-                                        db.selectGroup(getContext(), position);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                    }
-                                })
-                                .show();
-                    } else {
-                        //Need to open custom group dialog to enter password
-                        //To make it better, use a custom dialog that will work for both!
-                    }
+                    //Open custom dialog
+                    GroupDialog gd = new GroupDialog(getActivity(), group, position);
+                    gd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    gd.show();
                 }
             }
         });
 
+        //NEED TO FIX THIS SO IT CANT GO INTO LOCKED GROUPS
         //On click listener for random group button
         Button randGroup = root.findViewById(R.id.randGroup);
         randGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage("Are you sure you want to change groups?")
-                        .setTitle("Group Change")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int id) {
-                                //Call the function to place user in a new randomized group
-                                DatabaseService db = new DatabaseService();
-                                db.randomizeGroup(getContext());
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                            }
-                        })
-                        .show();
-                Log.i("MenuActivity", "User tapped the rng button");
+                //Get current group number
+                SharedPreferences prefs = getContext().getSharedPreferences("CurrentUser", MODE_PRIVATE);
+                Integer groupNum = prefs.getInt("groupNumber", 0);
+                //Get size of group array
+                Integer size = groupsAdapter.getCount();
+                //Generate random number between size and 0
+                Random random = new Random();
+                int randomNum = random.nextInt(size);
+                while (randomNum == groupNum) {
+                    randomNum = random.nextInt(size);
+                }
+                //Get group at random position
+                GroupObject group = groupsAdapter.getGroup(randomNum);
+                //Open custom dialog
+                GroupDialog gd = new GroupDialog(getActivity(), group, randomNum);
+                gd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                gd.show();
             }
         });
 
@@ -170,7 +158,6 @@ public class GroupsListFragment extends Fragment {
             TextView groupName = result.findViewById(R.id.groupName);
             groupName.setText(group.getGroupName());
             //Get the group member and message counts from DB
-            DatabaseService db = new DatabaseService();
             db.getGroupCounts(group.getGroupID(), result);
 
             return result;
