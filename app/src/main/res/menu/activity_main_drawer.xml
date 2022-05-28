@@ -15,6 +15,11 @@
             android:title="@string/grouplist" />
 
         <item
+            android:id="@+id/nav_groupsList"
+            android:icon="@drawable/ic_next"
+            android:title="@string/groupslist" />
+
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="@string/profile_home" />
@@ -26,7 +31,7 @@
 
         <item
             android:id="@+id/nav_logout"
-            android:icon="@android:drawable/ic_lock_power_off"
+            android:icon="@drawable/ic_logout"
             android:title="@string/logout_home" />
     </group>
 </menu>

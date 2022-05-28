@@ -31,7 +31,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class GroupListFragment extends Fragment {
     //Variable for SharedPreference
-    private static final String TAG = "ChatFragment";
+    private static final String TAG = "GroupListFragment";
 
     private static final String defaultImage = "https://static.thenounproject.com/png/3246632-200.png";
     private static final String userImage = "https://i.pinimg.com/originals/0c/3b/3a/0c3b3adb1a7530892e55ef36d3be6cb8.png";
@@ -126,12 +126,13 @@ public class GroupListFragment extends Fragment {
                 }
             }
 
-            //Sets the userList element to online/offline based on if user has been in chat within last 2 minutes
+            //Sets the userList element to online/offline based on if user has been in chat within last 3 minutes
             ImageView statusImg = result.findViewById(R.id.statusImage);
             TextView status = result.findViewById(R.id.status);
+            //Get the time now and latest time of user action recorded
             Date now = new Date();
             Date latestTime = userObject.getLatestTime();
-            if (latestTime != null && now.getTime() - latestTime.getTime() < 2*60*1000) {
+            if (userObject.getUserID().equals(DatabaseService.getUID()) || (latestTime != null && now.getTime() - latestTime.getTime() < 3*60*1000)) {
                 //Set online status
                 statusImg.setImageResource(R.drawable.ic_online);
                 status.setText("Online");

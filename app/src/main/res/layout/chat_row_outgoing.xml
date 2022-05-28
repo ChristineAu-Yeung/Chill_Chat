@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:background="@drawable/rounded_rectangle_blue"
-            android:maxWidth="350dp"
+            android:maxWidth="325dp"
             android:paddingStart="10dp"
             android:paddingTop="5dp"
             android:paddingEnd="10dp"

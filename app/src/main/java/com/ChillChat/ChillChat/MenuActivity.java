@@ -49,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_groupList, R.id.nav_profile, R.id.nav_about, R.id.nav_logout)
+                R.id.nav_home, R.id.nav_groupList, R.id.nav_groupsList, R.id.nav_profile, R.id.nav_about, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -111,37 +111,6 @@ public class MenuActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main_button, m);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_one) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
-            builder.setMessage("Are you sure you want to change groups?")
-                    .setTitle("Attention")
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int id) {
-                            //Call the function to place user in a new randomized group
-                            DatabaseService db = new DatabaseService();
-                            db.randomizeGroup(getApplicationContext());
-
-                            Intent intent = getIntent();
-                            finish();
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                        }
-                    })
-                    .show();
-            Log.i("Test", "User tapped the rng button");
-
-            return true;
-        }
-        return false;
     }
 
     @Override

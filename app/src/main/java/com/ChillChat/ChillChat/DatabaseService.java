@@ -27,12 +27,16 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.security.acl.Group;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -127,7 +131,9 @@ public class DatabaseService {
                                 EditText bio = result.findViewById(R.id.bioEditText);
 
                                 name.setText(user.getFirstName());
-                                register.setText(user.getDateRegistered().toString());
+                                //This formats the date to proper specification
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm aa");
+                                register.setText(sdf.format(user.getDateRegistered()));
                                 age.setText(String.valueOf(user.getAge()));
                                 bio.setText(user.getBio());
 
@@ -175,7 +181,6 @@ public class DatabaseService {
         //Map all parameters to user object
         Map<String, Object> user = new HashMap<>();
         user.put("firstName", firstName);
-        user.put("dateRegistered", FieldValue.serverTimestamp());
         user.put("age", age);
         user.put("biography", biography);
         user.put("profileImage", profileImage);
@@ -288,6 +293,7 @@ public class DatabaseService {
         msg.put("sender", message.firstName);
         msg.put("msgId", message.messageID);
         msg.put("userID", message.userID);
+        msg.put("messageSent", message.messageSent);
 
         return msg;
     }
@@ -370,20 +376,28 @@ public class DatabaseService {
 
                         if (snapshot != null && snapshot.exists()) {
                             // Ignore the warning here
-                            ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
+                            ArrayList<HashMap<String, Object>> incomingMessages = (ArrayList<HashMap<String, Object>>) snapshot.getData().get("messages");
 
                             if (incomingMessages != null) {
-
                                 for (int i = 0; i < incomingMessages.size(); i++) {
+                                    //This gets the Timestamp in which the message was sent and coverts it to date
+                                    com.google.firebase.Timestamp stamp = (com.google.firebase.Timestamp) incomingMessages.get(i).get("messageSent");
+                                    //Can change this once all app is updated and all messages are sent with date
+                                    Date messageSent = new Date("01 January 0 00:00:00 UTC");
+                                    if (stamp != null) {
+                                        messageSent = stamp.toDate();
+                                    }
 
+                                    //Create ChatMesaage object with data from DB
                                     ChatMessage incomingMessage = new ChatMessage(
-                                            incomingMessages.get(i).get("message"),
-                                            incomingMessages.get(i).get("sender"),
+                                            (String) incomingMessages.get(i).get("message"),
+                                            (String) incomingMessages.get(i).get("sender"),
 
                                             getGroupNumber(context),
 
-                                            incomingMessages.get(i).get("msgId"),
-                                            incomingMessages.get(i).get("userID"));
+                                            (String) incomingMessages.get(i).get("msgId"),
+                                            (String) incomingMessages.get(i).get("userID"),
+                                            messageSent);
 
                                     if (!ChatFragment.chatMessages.contains(incomingMessage)) {
                                         Log.d(TAG, "New message detected and being added to message array");
@@ -427,46 +441,6 @@ public class DatabaseService {
 
                 } else {
                     Log.i(TAG, "Unsuccessful");
-                }
-            }
-        });
-    }
-
-    /**
-     * This function randomizes the group that the user is in.
-     *
-     * @param context The current context of the app
-     */
-    public static void randomizeGroup(final Context context) {
-        final DatabaseService db = new DatabaseService();
-        final ArrayList<String> documentID = new ArrayList<>();
-
-        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        documentID.add(document.getId());
-                    }
-
-                    // Run the random function
-                    int random_integer = randomizeGroupHelper(context, documentID.size());
-
-                    // Open shared prefs for writing
-                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
-                    SharedPreferences.Editor edit = prefs.edit();
-
-                    //Edit the group number to be the new one
-                    edit.putInt("groupNumber", random_integer); // Hardcoded for newcomers
-                    edit.apply();
-
-                    Log.i(TAG, "Successfully stored new group number");
-                    ChatFragment.chatMessages.clear();
-                    ChatFragment.checkChat(context, new DatabaseService());
-
-                    db.setUserGroup(db.getUID(), context);
-                } else {
-                    Log.w(TAG, "randomizeGroup: Unable to query group documents");
                 }
             }
         });
@@ -631,7 +605,7 @@ public class DatabaseService {
      * @param groupDocumentString - the group document ID associated with logged in user
      */
     private void getUserList(String groupDocumentString) {
-        userCollection.whereEqualTo("groupID", groupDocumentString)
+        userCollection.whereEqualTo("groupID", groupDocumentString).orderBy("firstName", Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -690,6 +664,115 @@ public class DatabaseService {
                     userCollection.document(userId).update(report);
                 } else {
                     Log.i(TAG, "Unsuccessful");
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets the list of group  from Firestore and sets it on GroupsListFragment in groupsList array
+     */
+    public void getGroupsList() {
+        //Get the groupDocumentString from database based on group # int
+        groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Retrieved User's");
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String groupID = document.getId();
+                        String groupName = document.getString("groupName");
+                        //Need to set the various group object parameters here
+                        GroupObject group = new GroupObject(groupID, groupName, document.getString("groupPass"));
+                        if (!GroupsListFragment.groupsList.contains(group)) {
+                            Log.d(TAG, "New user detected and being added to user list");
+                            GroupsListFragment.groupsList.add(group);
+                            GroupsListFragment.externallyCallDatasetChanged();
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets and sets the amount of messages/users in a provided group
+     * @param groupID - the groupID for provided row
+     * @param row - the given row view
+     */
+    public void getGroupCounts(String groupID, final View row) {
+        //Get the amount of messages in given group
+        DocumentReference groupRef = groupCollection.document(groupID);
+        groupRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "Retrieved messages");
+                        ArrayList<HashMap<String, Object>> messages = (ArrayList<HashMap<String, Object>>) document.get("messages");
+                        //Set the amount of messages within the group on row provided
+                        TextView messageCount = row.findViewById(R.id.messageCount);
+                        Integer size = messages.size();
+                        messageCount.setText(size.toString());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "Get failed with ", task.getException());
+                }
+            }
+        });
+
+        //Get the amount of users in given group
+        userCollection.whereEqualTo("groupID", groupID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Retrieved user's");
+                            //Set the amount of users within the group on row provided
+                            TextView memberCount = row.findViewById(R.id.memberCount);
+                            Integer size = task.getResult().size();
+                            memberCount.setText(size.toString());
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Lets the user select the group that they are in.
+     * @param context The current context of the app
+     * @param position The group number that the person wants to join
+     */
+    public void selectGroup(final Context context, final Integer position) {
+        final DatabaseService db = new DatabaseService();
+        final ArrayList<String> documentID = new ArrayList<>();
+
+        db.groupCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        documentID.add(document.getId());
+                    }
+                    // Open shared prefs for writing
+                    SharedPreferences prefs = context.getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+
+                    //Edit the group number to be the new one and set it to user in DB
+                    edit.putInt("groupNumber", position);
+                    edit.apply();
+                    Log.i(TAG, "Successfully stored new group number");
+                    db.setUserGroup(db.getUID(), context);
+                    GroupsListFragment.externallyCallDatasetChanged();
+                } else {
+                    Log.w(TAG, "Unable to query group documents");
                 }
             }
         });

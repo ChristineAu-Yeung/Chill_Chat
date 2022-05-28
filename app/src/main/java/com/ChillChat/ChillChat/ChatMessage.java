@@ -1,6 +1,11 @@
 package com.ChillChat.ChillChat;
 
+import java.security.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ChatMessage {
@@ -9,7 +14,7 @@ public class ChatMessage {
     String firstName;
     String messageID;
     String userID;
-
+    Date messageSent;
     int groupNumber;
 
 //        String imageUrl; // For the future
@@ -29,6 +34,26 @@ public class ChatMessage {
         firstName = userFirstName;
         groupNumber = groupNum;
         userID = UID;
+
+        // If the message is null, we generate a new ID.
+        // This is so that when we get message data from the database, it doesn't generate a new ID.
+        if (msgID == null) {
+            messageID = this.generateID();
+        } else {
+            messageID = msgID;
+        }
+
+    }
+
+    /**
+     * Same as above but with extra mSent date parameter
+     */
+    public ChatMessage(String messageToBeSent, String userFirstName, int groupNum, String msgID, String UID, Date mSent) {
+        message = messageToBeSent;
+        firstName = userFirstName;
+        groupNumber = groupNum;
+        userID = UID;
+        messageSent = mSent;
 
         // If the message is null, we generate a new ID.
         // This is so that when we get message data from the database, it doesn't generate a new ID.

@@ -144,7 +144,7 @@ public class NotificationService extends Service {
                         if (snapshot != null && snapshot.exists()) {
                             // Ignore the warning here
                             ArrayList<HashMap<String, String>> incomingMessages = (ArrayList<HashMap<String, String>>) snapshot.getData().get("messages");
-                            if (incomingMessages != null) {
+                            if (incomingMessages != null && incomingMessages.size() > 0) {
                                 //Get the last sent message from incomingMessages
                                 Integer i = incomingMessages.size()-1;
                                 ChatMessage incomingMessage = new ChatMessage(
