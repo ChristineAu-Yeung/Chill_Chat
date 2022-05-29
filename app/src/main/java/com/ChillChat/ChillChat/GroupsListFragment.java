@@ -72,8 +72,7 @@ public class GroupsListFragment extends Fragment {
                 }
             }
         });
-
-        //NEED TO FIX THIS SO IT CANT GO INTO LOCKED GROUPS
+        
         //On click listener for random group button
         Button randGroup = root.findViewById(R.id.randGroup);
         randGroup.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +98,7 @@ public class GroupsListFragment extends Fragment {
             }
         });
 
-        //On click listener for random group button
+        //On click listener for new group button
         //Button newGroup = root.findViewById(R.id.newGroup);
 
         return root;
